@@ -83,7 +83,7 @@ function ProductPage() {
             )}
           </div>
           <div className="mt-4 grid grid-cols-4 gap-3">
-            {gallery.map((src, i) => (
+            {gallery.map((src: string, i: number) => (
               <button
                 key={src + i}
                 onClick={() => setActive(i)}
@@ -113,7 +113,7 @@ function ProductPage() {
               <span className="text-xs">{color.name}</span>
             </div>
             <div className="mt-3 flex gap-3">
-              {product.colors.map((c) => {
+              {product.colors.map((c: { name: string; hex: string }) => {
                 const selected = c.name === color.name;
                 return (
                   <button
@@ -168,7 +168,7 @@ function ProductPage() {
           <div className="mt-10 border-t border-border/60 pt-8">
             <h2 className="text-[10px] uppercase tracking-luxe text-muted-foreground">The Details</h2>
             <ul className="mt-4 space-y-2 text-sm">
-              {product.details?.map((d) => (
+              {product.details?.map((d: string) => (
                 <li key={d} className="flex gap-3">
                   <span className="mt-2 h-px w-4 bg-accent" />
                   {d}
