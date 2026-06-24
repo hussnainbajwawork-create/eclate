@@ -30,7 +30,7 @@ const defaultDetails = [
   "Crafted in Lahore, Pakistan",
 ];
 
-export const products: Product[] = [
+const rawProducts: Product[] = [
   {
     id: "aurora-tote",
     name: "Aurora Tote",
@@ -98,7 +98,9 @@ export const products: Product[] = [
     image: "https://images.unsplash.com/photo-1597633244018-0201d0158aab?auto=format&fit=crop&w=900&q=80",
     colors: [{ name: "Beige", hex: "#D9C9B6" }, { name: "Gold", hex: "#C6A76A" }],
   },
-].map((p) => ({
+];
+
+export const products: Product[] = rawProducts.map((p) => ({
   ...p,
   gallery: p.gallery ?? [p.image, ...sharedDetail],
   description: p.description ?? defaultDescription,
