@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronLeft, Check, Truck, ShieldCheck, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, Check, Truck, ShieldCheck, RotateCcw, ChevronLeft as ArrowLeft, ChevronRight as ArrowRight, X, ZoomIn, ZoomOut, Expand } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { products, getProduct, formatPKR } from "@/lib/products";
 
@@ -51,8 +51,57 @@ function ProductPage() {
   const gallery = product.gallery ?? [product.image];
   const [active, setActive] = useState(0);
   const [color, setColor] = useState(product.colors[0]);
+  const [lightbox, setLightbox] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState<{ x: number; y: number } | null>(null);
 
   const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
+
+  const next = useCallback(() => {
+    setActive((i) => (i + 1) % gallery.length);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, [gallery.length]);
+
+  const prev = useCallback(() => {
+    setActive((i) => (i - 1 + gallery.length) % gallery.length);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, [gallery.length]);
+
+  const closeLightbox = useCallback(() => {
+    setLightbox(false);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, []);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "+" || e.key === "=") setZoom((z) => Math.min(z + 0.5, 4));
+      if (e.key === "-") setZoom((z) => Math.max(z - 0.5, 1));
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightbox, next, prev, closeLightbox]);
+
+  const toggleZoom = () => {
+    if (zoom > 1) {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+    } else {
+      setZoom(2);
+    }
+  };
 
   return (
     <SiteLayout>
@@ -69,19 +118,27 @@ function ProductPage() {
       <section className="mx-auto grid max-w-7xl gap-10 px-6 pt-8 pb-20 lg:grid-cols-2 lg:gap-16">
         {/* Gallery */}
         <div className="animate-fade-up">
-          <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+          <button
+            type="button"
+            onClick={() => setLightbox(true)}
+            className="group relative block aspect-[4/5] w-full overflow-hidden bg-secondary"
+            aria-label="Open image lightbox"
+          >
             <img
               key={active}
               src={gallery[active]}
               alt={`${product.name} — view ${active + 1}`}
-              className="h-full w-full object-cover animate-fade-in"
+              className="h-full w-full object-cover animate-fade-in transition-transform duration-[1200ms] ease-out group-hover:scale-105"
             />
             {product.isNew && (
               <span className="absolute left-4 top-4 bg-background/90 px-3 py-1 text-[10px] uppercase tracking-luxe">
                 New
               </span>
             )}
-          </div>
+            <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center bg-background/80 text-foreground opacity-0 backdrop-blur transition group-hover:opacity-100">
+              <Expand className="h-4 w-4" />
+            </span>
+          </button>
           <div className="mt-4 grid grid-cols-4 gap-3">
             {gallery.map((src: string, i: number) => (
               <button
