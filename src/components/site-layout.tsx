@@ -70,9 +70,16 @@ function Header() {
 
       {open && (
         <div className="fixed inset-0 z-50 bg-background animate-fade-in md:hidden">
-          <div className="flex items-center justify-between px-6 py-5">
-            <span className="font-serif text-2xl tracking-[0.4em]">ÉCLAT</span>
-            <button aria-label="Close" onClick={() => setOpen(false)}><X className="h-5 w-5" /></button>
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-5">
+            <span />
+            <span className="text-center font-serif text-2xl tracking-[0.4em]">ÉCLAT</span>
+            <button
+              aria-label="Close"
+              onClick={() => setOpen(false)}
+              className="justify-self-end"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
           <nav className="flex flex-col items-center gap-8 pt-16 text-sm uppercase tracking-luxe">
             {nav.map((n) => (
