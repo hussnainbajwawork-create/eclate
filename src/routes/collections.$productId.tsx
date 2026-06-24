@@ -267,6 +267,120 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[100] flex flex-col bg-black/95 animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${product.name} gallery`}
+        >
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-6 py-5 text-white">
+            <span className="font-serif text-sm tracking-[0.3em]">
+              {String(active + 1).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setZoom((z) => Math.max(z - 0.5, 1))}
+                disabled={zoom <= 1}
+                aria-label="Zoom out"
+                className="flex h-10 w-10 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 disabled:opacity-30"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </button>
+              <span className="w-12 text-center text-xs tracking-luxe text-white/70">{Math.round(zoom * 100)}%</span>
+              <button
+                onClick={() => setZoom((z) => Math.min(z + 0.5, 4))}
+                disabled={zoom >= 4}
+                aria-label="Zoom in"
+                className="flex h-10 w-10 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 disabled:opacity-30"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </button>
+              <button
+                onClick={closeLightbox}
+                aria-label="Close"
+                className="ml-2 flex h-10 w-10 items-center justify-center border border-white/20 text-white transition hover:bg-white/10"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Image stage */}
+          <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+            <button
+              onClick={prev}
+              aria-label="Previous image"
+              className="absolute left-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:left-8"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+
+            <div
+              className="flex h-full w-full items-center justify-center overflow-hidden"
+              onMouseDown={(e) => {
+                if (zoom <= 1) return;
+                setDragging({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+              }}
+              onMouseMove={(e) => {
+                if (!dragging) return;
+                setPan({ x: e.clientX - dragging.x, y: e.clientY - dragging.y });
+              }}
+              onMouseUp={() => setDragging(null)}
+              onMouseLeave={() => setDragging(null)}
+              style={{ cursor: zoom > 1 ? (dragging ? "grabbing" : "grab") : "zoom-in" }}
+            >
+              <img
+                key={active}
+                src={gallery[active]}
+                alt={`${product.name} — view ${active + 1}`}
+                onClick={(e) => {
+                  if (zoom > 1) return;
+                  e.stopPropagation();
+                  toggleZoom();
+                }}
+                draggable={false}
+                className="max-h-[80vh] max-w-[85vw] select-none object-contain transition-transform duration-300 ease-out animate-fade-in"
+                style={{
+                  transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                  transitionDuration: dragging ? "0ms" : "300ms",
+                }}
+              />
+            </div>
+
+            <button
+              onClick={next}
+              aria-label="Next image"
+              className="absolute right-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:right-8"
+            >
+              <ArrowRight className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Thumbnails */}
+          <div className="flex justify-center gap-2 px-6 pb-6 pt-4">
+            {gallery.map((src: string, i: number) => (
+              <button
+                key={src + i}
+                onClick={() => {
+                  setActive(i);
+                  setZoom(1);
+                  setPan({ x: 0, y: 0 });
+                }}
+                aria-label={`View ${i + 1}`}
+                className={`h-16 w-16 overflow-hidden border transition ${
+                  active === i ? "border-accent" : "border-white/20 opacity-50 hover:opacity-100"
+                }`}
+              >
+                <img src={src} alt="" className="h-full w-full object-cover" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </SiteLayout>
   );
 }
