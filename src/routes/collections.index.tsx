@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site-layout";
 import { products, formatPKR, type Category } from "@/lib/products";
 
-export const Route = createFileRoute("/collections")({
+export const Route = createFileRoute("/collections/")({
   head: () => ({
     meta: [
       { title: "Collections — ÉCLAT" },
