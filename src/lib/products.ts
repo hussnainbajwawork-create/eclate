@@ -98,6 +98,13 @@ export const products: Product[] = [
     image: "https://images.unsplash.com/photo-1597633244018-0201d0158aab?auto=format&fit=crop&w=900&q=80",
     colors: [{ name: "Beige", hex: "#D9C9B6" }, { name: "Gold", hex: "#C6A76A" }],
   },
-];
+].map((p) => ({
+  ...p,
+  gallery: p.gallery ?? [p.image, ...sharedDetail],
+  description: p.description ?? defaultDescription,
+  details: p.details ?? defaultDetails,
+}));
+
+export const getProduct = (id: string) => products.find((p) => p.id === id);
 
 export const formatPKR = (n: number) => `PKR ${n.toLocaleString("en-PK")}`;
