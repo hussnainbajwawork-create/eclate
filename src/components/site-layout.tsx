@@ -29,48 +29,50 @@ function Header() {
   ] as const;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-5">
-        <div className="flex items-center">
-          <button
-            aria-label="Menu"
-            className="md:hidden"
-            onClick={() => setOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <nav className="hidden gap-8 text-xs uppercase tracking-luxe md:flex">
-            {nav.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                className="link-underline hover:text-foreground"
-                activeProps={{ className: "text-foreground" }}
-                inactiveProps={{ className: "text-muted-foreground" }}
-              >
-                {n.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
+    <>
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-5">
+          <div className="flex items-center">
+            <button
+              aria-label="Menu"
+              className="md:hidden"
+              onClick={() => setOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <nav className="hidden gap-8 text-xs uppercase tracking-luxe md:flex">
+              {nav.map((n) => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className="link-underline hover:text-foreground"
+                  activeProps={{ className: "text-foreground" }}
+                  inactiveProps={{ className: "text-muted-foreground" }}
+                >
+                  {n.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-        <Link to="/" className="text-center">
-          <span className="font-serif text-2xl tracking-[0.4em] md:text-3xl">ÉCLAT</span>
-        </Link>
-
-        <div className="flex items-center justify-end gap-4">
-          <button aria-label="Toggle theme" onClick={toggle} className="text-muted-foreground hover:text-foreground">
-            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
-          <Link to="/order" aria-label="Order" className="text-muted-foreground hover:text-foreground">
-            <ShoppingBag className="h-4 w-4" />
+          <Link to="/" className="text-center">
+            <span className="font-serif text-2xl tracking-[0.4em] md:text-3xl">ÉCLAT</span>
           </Link>
+
+          <div className="flex items-center justify-end gap-4">
+            <button aria-label="Toggle theme" onClick={toggle} className="text-muted-foreground hover:text-foreground">
+              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <Link to="/order" aria-label="Order" className="text-muted-foreground hover:text-foreground">
+              <ShoppingBag className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
-      </div>
+      </header>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-background animate-fade-in md:hidden">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-5">
+        <div className="fixed inset-0 z-[60] flex flex-col bg-background animate-fade-in md:hidden">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-border/60 px-6 py-5">
             <span />
             <span className="text-center font-serif text-2xl tracking-[0.4em]">ÉCLAT</span>
             <button
@@ -81,14 +83,14 @@ function Header() {
               <X className="h-5 w-5" />
             </button>
           </div>
-          <nav className="flex flex-col items-center gap-8 pt-16 text-sm uppercase tracking-luxe">
+          <nav className="flex flex-1 flex-col items-center gap-8 pt-24 text-sm uppercase tracking-luxe">
             {nav.map((n) => (
               <Link key={n.to} to={n.to} onClick={() => setOpen(false)}>{n.label}</Link>
             ))}
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
 
