@@ -93,31 +93,33 @@ function CollectionsPage() {
               className="group animate-fade-up"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                />
-                {p.isNew && (
-                  <span className="absolute left-3 top-3 bg-background/90 px-2 py-1 text-[10px] uppercase tracking-luxe text-foreground">
-                    New
-                  </span>
-                )}
-                <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                  <Link
-                    to="/order"
-                    search={{ product: p.id }}
-                    className="block w-full bg-foreground py-3 text-center text-[11px] uppercase tracking-luxe text-background hover:bg-accent hover:text-foreground"
-                  >
-                    Order Now
-                  </Link>
+              <Link
+                to="/collections/$productId"
+                params={{ productId: p.id }}
+                className="block"
+              >
+                <div className="relative aspect-[4/5] overflow-hidden bg-secondary">
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                  />
+                  {p.isNew && (
+                    <span className="absolute left-3 top-3 bg-background/90 px-2 py-1 text-[10px] uppercase tracking-luxe text-foreground">
+                      New
+                    </span>
+                  )}
+                  <div className="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                    <span className="block w-full bg-foreground py-3 text-center text-[11px] uppercase tracking-luxe text-background">
+                      View Piece
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-5 flex items-baseline justify-between">
-                <h3 className="font-serif text-lg">{p.name}</h3>
-                <span className="text-xs text-muted-foreground">{formatPKR(p.price)}</span>
-              </div>
+                <div className="mt-5 flex items-baseline justify-between">
+                  <h3 className="font-serif text-lg">{p.name}</h3>
+                  <span className="text-xs text-muted-foreground">{formatPKR(p.price)}</span>
+                </div>
+              </Link>
               <div className="mt-3 flex gap-1.5">
                 {p.colors.map((c) => (
                   <span
