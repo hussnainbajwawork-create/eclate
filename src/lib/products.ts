@@ -6,9 +6,29 @@ export interface Product {
   price: number;
   category: Category;
   image: string;
+  gallery?: string[];
   colors: { name: string; hex: string }[];
   isNew?: boolean;
+  description?: string;
+  details?: string[];
 }
+
+const sharedDetail = [
+  "https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=1200&q=80",
+];
+
+const defaultDescription =
+  "Hand-finished in our Lahore atelier from full-grain Italian leather, this piece embodies the ÉCLAT philosophy: quiet luxury, considered proportions, and a silhouette designed to outlast trend.";
+
+const defaultDetails = [
+  "Full-grain Italian leather",
+  "Solid brass hardware with soft gold finish",
+  "Suede-lined interior with two slip pockets",
+  "Dust bag and authenticity card included",
+  "Crafted in Lahore, Pakistan",
+];
 
 export const products: Product[] = [
   {
