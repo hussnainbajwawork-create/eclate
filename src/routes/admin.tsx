@@ -316,7 +316,7 @@ function Input({
   value,
   onChange,
   ...rest
-}: { label: string; value: string; onChange: (v: string) => void } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: { label: string; value: string; onChange: (v: string) => void } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">) {
   return (
     <label className="block">
       <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">{label}</span>
