@@ -220,7 +220,7 @@ function ProductDialog({
         active: form.active,
       };
 
-      let productId = product.id;
+      let productId: string = product.id ?? "";
       if (isNew) {
         const { data, error } = await supabase.from("products").insert(payload).select("id").single();
         if (error) throw error;
@@ -229,6 +229,7 @@ function ProductDialog({
         const { error } = await supabase.from("products").update(payload).eq("id", product.id!);
         if (error) throw error;
       }
+
 
       // Replace images
       await supabase.from("product_images").delete().eq("product_id", productId);
