@@ -1,70 +1,84 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ChevronLeft, Check, Truck, ShieldCheck, RotateCcw, ChevronLeft as ArrowLeft, ChevronRight as ArrowRight, X, ZoomIn, ZoomOut, Expand } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ChevronLeft,
+  Check,
+  Truck,
+  ShieldCheck,
+  RotateCcw,
+  ChevronLeft as ArrowLeft,
+  ChevronRight as ArrowRight,
+  X,
+  ZoomIn,
+  ZoomOut,
+  Expand,
+  Heart,
+  MessageCircle,
+  ShoppingBag,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
-import { products, getProduct, formatPKR } from "@/lib/products";
+import { ProductCard } from "@/components/product-card";
+import { useProduct, useProducts } from "@/lib/db";
+import { formatPKR, whatsappLink } from "@/lib/format";
+import { useCart } from "@/lib/cart";
+import { useWishlist } from "@/lib/wishlist";
 
 export const Route = createFileRoute("/collections/$productId")({
-  loader: ({ params }) => {
-    const product = getProduct(params.productId);
-    if (!product) throw notFound();
-    return { product };
-  },
-  head: ({ loaderData }) => {
-    const p = loaderData?.product;
-    if (!p) return { meta: [{ title: "Product — ÉCLAT" }] };
-    return {
-      meta: [
-        { title: `${p.name} — ÉCLAT` },
-        { name: "description", content: `${p.name}. ${formatPKR(p.price)}. Handcrafted in Lahore from full-grain leather.` },
-        { property: "og:title", content: `${p.name} — ÉCLAT` },
-        { property: "og:description", content: `Handcrafted ${p.category.toLowerCase()} bag — ${formatPKR(p.price)}.` },
-        { property: "og:image", content: p.image },
-        { name: "twitter:image", content: p.image },
-      ],
-    };
-  },
-  notFoundComponent: () => (
-    <SiteLayout>
-      <section className="mx-auto max-w-xl px-6 py-32 text-center">
-        <h1 className="font-serif text-4xl">Piece not found</h1>
-        <p className="mt-4 text-sm text-muted-foreground">The bag you are looking for may have been retired.</p>
-        <Link to="/collections" className="mt-8 inline-block text-xs uppercase tracking-luxe link-underline">
-          Return to the Collection
-        </Link>
-      </section>
-    </SiteLayout>
-  ),
-  errorComponent: ({ error }) => (
-    <SiteLayout>
-      <section className="mx-auto max-w-xl px-6 py-32 text-center">
-        <h1 className="font-serif text-3xl">Something went wrong</h1>
-        <p className="mt-4 text-sm text-muted-foreground">{error.message}</p>
-      </section>
-    </SiteLayout>
-  ),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.productId} — ÉCLAT` },
+      { name: "description", content: `Discover ${params.productId} at ÉCLAT — handcrafted in Pakistan.` },
+    ],
+  }),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
-  const gallery = product.gallery ?? [product.image];
+  const { productId } = Route.useParams();
+  const { data: product, isLoading } = useProduct(productId);
+  const { data: allProducts = [] } = useProducts();
+  const cart = useCart();
+  const wishlist = useWishlist();
+
+  const gallery = useMemo(
+    () => product?.images.map((i) => i.url) ?? [],
+    [product],
+  );
   const [active, setActive] = useState(0);
-  const [color, setColor] = useState(product.colors[0]);
+  const [color, setColor] = useState<{ name: string; hex: string } | null>(null);
+  const [size, setSize] = useState<string>("");
+  const [qty, setQty] = useState(1);
   const [lightbox, setLightbox] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState<{ x: number; y: number } | null>(null);
 
-  const related = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
+  useEffect(() => {
+    if (product) {
+      setColor(product.colors[0] ?? null);
+      setSize(product.sizes[0] ?? "");
+      setActive(0);
+    }
+  }, [product]);
+
+  const related = useMemo(
+    () =>
+      allProducts
+        .filter((p) => product && p.id !== product.id && p.category_id === product.category_id)
+        .slice(0, 4),
+    [allProducts, product],
+  );
 
   const next = useCallback(() => {
+    if (!gallery.length) return;
     setActive((i) => (i + 1) % gallery.length);
     setZoom(1);
     setPan({ x: 0, y: 0 });
   }, [gallery.length]);
 
   const prev = useCallback(() => {
+    if (!gallery.length) return;
     setActive((i) => (i - 1 + gallery.length) % gallery.length);
     setZoom(1);
     setPan({ x: 0, y: 0 });
@@ -94,6 +108,49 @@ function ProductPage() {
     };
   }, [lightbox, next, prev, closeLightbox]);
 
+  if (isLoading) {
+    return (
+      <SiteLayout>
+        <div className="mx-auto max-w-7xl px-6 py-32 text-center text-sm text-muted-foreground">Loading…</div>
+      </SiteLayout>
+    );
+  }
+
+  if (!product) {
+    return (
+      <SiteLayout>
+        <section className="mx-auto max-w-xl px-6 py-32 text-center">
+          <h1 className="font-serif text-4xl">Piece not found</h1>
+          <p className="mt-4 text-sm text-muted-foreground">The bag you are looking for may have been retired.</p>
+          <Link to="/shop" className="mt-8 inline-block text-xs uppercase tracking-luxe link-underline">
+            Return to the Boutique
+          </Link>
+        </section>
+      </SiteLayout>
+    );
+  }
+
+  const wished = wishlist.has(product.id);
+  const soldOut = product.stock === "sold_out";
+
+  const handleAddToCart = () => {
+    cart.add({
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      price: product.price,
+      image: gallery[0] ?? "",
+      color: color?.name,
+      size: size || undefined,
+      qty,
+    });
+    toast.success(`${product.name} added to bag`);
+  };
+
+  const waMsg = `Hello ÉCLAT, I'd like to order: ${product.name}${color ? ` · ${color.name}` : ""}${
+    size ? ` · ${size}` : ""
+  } × ${qty}. Total ${formatPKR(product.price * qty)}.`;
+
   const toggleZoom = () => {
     if (zoom > 1) {
       setZoom(1);
@@ -107,8 +164,8 @@ function ProductPage() {
     <SiteLayout>
       <div className="mx-auto max-w-7xl px-6 pt-10">
         <nav className="flex items-center gap-2 text-[11px] uppercase tracking-luxe text-muted-foreground">
-          <Link to="/collections" className="flex items-center gap-1 hover:text-foreground">
-            <ChevronLeft className="h-3 w-3" /> Collection
+          <Link to="/shop" className="flex items-center gap-1 hover:text-foreground">
+            <ChevronLeft className="h-3 w-3" /> Shop
           </Link>
           <span>/</span>
           <span className="text-foreground">{product.name}</span>
@@ -120,17 +177,19 @@ function ProductPage() {
         <div className="animate-fade-up">
           <button
             type="button"
-            onClick={() => setLightbox(true)}
+            onClick={() => gallery.length > 0 && setLightbox(true)}
             className="group relative block aspect-[4/5] w-full overflow-hidden bg-secondary"
             aria-label="Open image lightbox"
           >
-            <img
-              key={active}
-              src={gallery[active]}
-              alt={`${product.name} — view ${active + 1}`}
-              className="h-full w-full object-cover animate-fade-in transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-            />
-            {product.isNew && (
+            {gallery[active] && (
+              <img
+                key={active}
+                src={gallery[active]}
+                alt={`${product.name} — view ${active + 1}`}
+                className="h-full w-full object-cover animate-fade-in transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+              />
+            )}
+            {product.is_new && (
               <span className="absolute left-4 top-4 bg-background/90 px-3 py-1 text-[10px] uppercase tracking-luxe">
                 New
               </span>
@@ -139,79 +198,131 @@ function ProductPage() {
               <Expand className="h-4 w-4" />
             </span>
           </button>
-          <div className="mt-4 grid grid-cols-4 gap-3">
-            {gallery.map((src: string, i: number) => (
-              <button
-                key={src + i}
-                onClick={() => setActive(i)}
-                className={`relative aspect-square overflow-hidden bg-secondary transition ${
-                  active === i ? "ring-1 ring-accent ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100"
-                }`}
-                aria-label={`View ${i + 1}`}
-              >
-                <img src={src} alt="" className="h-full w-full object-cover" />
-              </button>
-            ))}
-          </div>
+          {gallery.length > 1 && (
+            <div className="mt-4 grid grid-cols-4 gap-3">
+              {gallery.map((src, i) => (
+                <button
+                  key={src + i}
+                  onClick={() => setActive(i)}
+                  className={`relative aspect-square overflow-hidden bg-secondary transition ${
+                    active === i ? "ring-1 ring-accent ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`View ${i + 1}`}
+                >
+                  <img src={src} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}
         <div className="animate-fade-up lg:sticky lg:top-28 lg:self-start" style={{ animationDelay: "120ms" }}>
-          <span className="text-xs uppercase tracking-luxe text-muted-foreground">{product.category}</span>
+          {product.category && (
+            <span className="text-xs uppercase tracking-luxe text-muted-foreground">{product.category.name}</span>
+          )}
           <h1 className="mt-3 font-serif text-4xl md:text-5xl">{product.name}</h1>
           <p className="mt-4 font-serif text-2xl text-accent">{formatPKR(product.price)}</p>
 
-          <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+          <div className="mt-3 text-xs uppercase tracking-luxe">
+            {product.stock === "in_stock" && <span className="text-emerald-600">In Stock</span>}
+            {product.stock === "low_stock" && <span className="text-amber-600">Only a few left</span>}
+            {product.stock === "sold_out" && <span className="text-destructive">Sold Out</span>}
+          </div>
+
+          {product.description && (
+            <p className="mt-8 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+          )}
 
           {/* Color */}
-          <div className="mt-10">
-            <div className="flex items-baseline justify-between">
-              <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Colour</span>
-              <span className="text-xs">{color.name}</span>
+          {product.colors.length > 0 && (
+            <div className="mt-10">
+              <div className="flex items-baseline justify-between">
+                <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Colour</span>
+                <span className="text-xs">{color?.name}</span>
+              </div>
+              <div className="mt-3 flex gap-3">
+                {product.colors.map((c) => {
+                  const selected = c.name === color?.name;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => setColor({ name: c.name, hex: c.hex })}
+                      aria-label={c.name}
+                      className={`relative h-9 w-9 rounded-full border transition ${
+                        selected ? "border-accent" : "border-border hover:border-foreground/40"
+                      }`}
+                    >
+                      <span className="absolute inset-1 rounded-full" style={{ backgroundColor: c.hex }} />
+                      {selected && (
+                        <Check
+                          className="absolute inset-0 m-auto h-3.5 w-3.5"
+                          style={{ color: c.hex === "#111111" ? "#fff" : "#111" }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="mt-3 flex gap-3">
-              {product.colors.map((c: { name: string; hex: string }) => {
-                const selected = c.name === color.name;
-                return (
+          )}
+
+          {/* Sizes */}
+          {product.sizes.length > 1 && (
+            <div className="mt-8">
+              <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Size</span>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {product.sizes.map((s) => (
                   <button
-                    key={c.name}
-                    onClick={() => setColor(c)}
-                    aria-label={c.name}
-                    className={`relative h-9 w-9 rounded-full border transition ${
-                      selected ? "border-accent" : "border-border hover:border-foreground/40"
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`min-w-[3rem] border px-3 py-2 text-xs uppercase tracking-luxe transition ${
+                      size === s ? "border-accent bg-accent/5" : "border-border hover:border-foreground/40"
                     }`}
                   >
-                    <span
-                      className="absolute inset-1 rounded-full"
-                      style={{ backgroundColor: c.hex }}
-                    />
-                    {selected && (
-                      <Check
-                        className="absolute inset-0 m-auto h-3.5 w-3.5"
-                        style={{ color: c.hex === "#111111" ? "#fff" : "#111" }}
-                      />
-                    )}
+                    {s}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Qty */}
+          <div className="mt-8 flex items-center gap-6">
+            <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Quantity</span>
+            <div className="flex items-center border border-border">
+              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2">−</button>
+              <span className="min-w-[2.5rem] text-center text-sm">{qty}</span>
+              <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2">+</button>
             </div>
           </div>
 
-          {/* CTA */}
+          {/* CTAs */}
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/order"
-              search={{ product: product.id }}
-              className="btn-gold flex-1 py-5 text-center text-xs uppercase tracking-luxe"
+            <button
+              onClick={handleAddToCart}
+              disabled={soldOut}
+              className="btn-gold flex flex-1 items-center justify-center gap-2 py-5 text-xs uppercase tracking-luxe disabled:opacity-50"
             >
-              Order Now
-            </Link>
-            <Link
-              to="/collections"
-              className="flex-1 border border-border py-5 text-center text-xs uppercase tracking-luxe transition hover:border-foreground"
+              <ShoppingBag className="h-4 w-4" /> {soldOut ? "Sold Out" : "Add to Bag"}
+            </button>
+            <a
+              href={whatsappLink(waMsg)}
+              target="_blank"
+              rel="noreferrer"
+              className="flex flex-1 items-center justify-center gap-2 border border-border py-5 text-center text-xs uppercase tracking-luxe transition hover:border-foreground"
             >
-              Continue Browsing
-            </Link>
+              <MessageCircle className="h-4 w-4" /> WhatsApp
+            </a>
+            <button
+              onClick={() => wishlist.toggle(product.id)}
+              aria-label="Save to wishlist"
+              className={`flex h-auto items-center justify-center border px-5 transition ${
+                wished ? "border-accent text-accent" : "border-border hover:border-foreground"
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${wished ? "fill-current" : ""}`} />
+            </button>
           </div>
 
           {/* Reassurance */}
@@ -221,18 +332,24 @@ function ProductPage() {
             <li className="flex items-center gap-2"><RotateCcw className="h-4 w-4 text-accent" /> 14-day exchange</li>
           </ul>
 
+          {product.delivery_info && (
+            <p className="mt-4 text-xs text-muted-foreground">{product.delivery_info}</p>
+          )}
+
           {/* Details */}
-          <div className="mt-10 border-t border-border/60 pt-8">
-            <h2 className="text-[10px] uppercase tracking-luxe text-muted-foreground">The Details</h2>
-            <ul className="mt-4 space-y-2 text-sm">
-              {product.details?.map((d: string) => (
-                <li key={d} className="flex gap-3">
-                  <span className="mt-2 h-px w-4 bg-accent" />
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {product.details.length > 0 && (
+            <div className="mt-10 border-t border-border/60 pt-8">
+              <h2 className="text-[10px] uppercase tracking-luxe text-muted-foreground">The Details</h2>
+              <ul className="mt-4 space-y-2 text-sm">
+                {product.details.map((d) => (
+                  <li key={d} className="flex gap-3">
+                    <span className="mt-2 h-px w-4 bg-accent" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 
@@ -241,42 +358,24 @@ function ProductPage() {
         <section className="mx-auto max-w-7xl px-6 pb-24">
           <div className="flex items-baseline justify-between border-t border-border/60 pt-10">
             <h2 className="font-serif text-2xl md:text-3xl">You may also love</h2>
-            <Link to="/collections" className="text-xs uppercase tracking-luxe link-underline">View all</Link>
+            <Link to="/shop" className="text-xs uppercase tracking-luxe link-underline">View all</Link>
           </div>
           <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {related.map((p) => (
-              <Link
-                key={p.id}
-                to="/collections/$productId"
-                params={{ productId: p.id }}
-                className="group block"
-              >
-                <div className="aspect-[4/5] overflow-hidden bg-secondary">
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                  />
-                </div>
-                <div className="mt-4 flex items-baseline justify-between">
-                  <h3 className="font-serif text-base">{p.name}</h3>
-                  <span className="text-xs text-muted-foreground">{formatPKR(p.price)}</span>
-                </div>
-              </Link>
+            {related.map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
             ))}
           </div>
         </section>
       )}
 
       {/* Lightbox */}
-      {lightbox && (
+      {lightbox && gallery.length > 0 && (
         <div
           className="fixed inset-0 z-[100] flex flex-col bg-black/95 animate-fade-in"
           role="dialog"
           aria-modal="true"
           aria-label={`${product.name} gallery`}
         >
-          {/* Top bar */}
           <div className="flex items-center justify-between px-6 py-5 text-white">
             <span className="font-serif text-sm tracking-[0.3em]">
               {String(active + 1).padStart(2, "0")} / {String(gallery.length).padStart(2, "0")}
@@ -309,7 +408,6 @@ function ProductPage() {
             </div>
           </div>
 
-          {/* Image stage */}
           <div className="relative flex flex-1 items-center justify-center overflow-hidden">
             <button
               onClick={prev}
@@ -360,9 +458,8 @@ function ProductPage() {
             </button>
           </div>
 
-          {/* Thumbnails */}
           <div className="flex justify-center gap-2 px-6 pb-6 pt-4">
-            {gallery.map((src: string, i: number) => (
+            {gallery.map((src, i) => (
               <button
                 key={src + i}
                 onClick={() => {
