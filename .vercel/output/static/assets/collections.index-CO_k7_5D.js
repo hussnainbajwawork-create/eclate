@@ -1,1 +1,0 @@
-import{t as e,u as t}from"./link-CYQq4L2S.js";var n=t(),r=()=>(0,n.jsx)(e,{to:`/shop`,children:`Shop`});export{r as component};
