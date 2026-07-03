@@ -1,7 +1,7 @@
 import { t as supabase } from "./client-B53tpCKD.mjs";
 import { n as createStart, t as createMiddleware } from "./createStart-Dt05N14y.mjs";
 import { t as renderErrorPage } from "./ssr.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/start-gnTcaJJK.js
+//#region node_modules/.nitro/vite/services/ssr/assets/start-BHM9vvQW.js
 var attachSupabaseAuth = createMiddleware({ type: "function" }).client(async ({ next }) => {
 	const { data } = await supabase.auth.getSession();
 	const token = data.session?.access_token;
@@ -13,7 +13,8 @@ var errorMiddleware = createMiddleware().server(async ({ next }) => {
 	} catch (error) {
 		if (error != null && typeof error === "object" && "statusCode" in error) throw error;
 		console.error(error);
-		return new Response(renderErrorPage(), {
+		const errMsg = error instanceof Error ? error.message : String(error);
+		return new Response(renderErrorPage(errMsg), {
 			status: 500,
 			headers: { "content-type": "text/html; charset=utf-8" }
 		});
