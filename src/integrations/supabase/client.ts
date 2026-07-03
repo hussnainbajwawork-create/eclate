@@ -40,7 +40,40 @@ function createSupabaseClient() {
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(', ')}.`;
     console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    
+    // Return a dummy client to prevent SSR crashing. It will log errors on any query.
+    const createThunk = (errMessage: string): any => {
+      const fn = () => thunk;
+      const thunk = new Proxy(fn, {
+        get(target, prop) {
+          if (prop === "then") {
+            return (resolve: any) => resolve({ data: [], error: new Error(errMessage) });
+          }
+          return thunk;
+        }
+      });
+      return thunk;
+    };
+
+    return new Proxy({} as any, {
+      get(target, prop) {
+        if (prop === "auth") {
+          return {
+            onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+            getSession: async () => ({ data: { session: null } }),
+            signOut: async () => {},
+            signInWithOAuth: async () => ({ error: new Error(message) }),
+          };
+        }
+        if (prop === "from") {
+          return (table: string) => {
+            console.error(`[Supabase] Attempted to query table "${table}" but Supabase keys are missing.`);
+            return createThunk(message);
+          };
+        }
+        return createThunk(message);
+      }
+    });
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
