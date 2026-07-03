@@ -1,19 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ChevronLeft,
-  Check,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
-  ChevronLeft as ArrowLeft,
-  ChevronRight as ArrowRight,
-  X,
-  ZoomIn,
-  ZoomOut,
-  Expand,
-  Heart,
-  MessageCircle,
-  ShoppingBag,
+  ChevronLeft, Check, Truck, ShieldCheck, RotateCcw,
+  ChevronLeft as ArrowLeft, ChevronRight as ArrowRight,
+  X, ZoomIn, ZoomOut, Expand, Heart, MessageCircle, ShoppingBag,
+  Share2, Copy, ChevronDown, Ruler, Clock,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -34,12 +24,138 @@ export const Route = createFileRoute("/collections/$productId")({
   component: ProductPage,
 });
 
+/* ─── Recently Viewed ─── */
+const RECENTLY_VIEWED_KEY = "eclat-recently-viewed";
+const MAX_RECENT = 8;
+
+function addToRecentlyViewed(slug: string) {
+  try {
+    const raw = localStorage.getItem(RECENTLY_VIEWED_KEY);
+    let items: string[] = raw ? JSON.parse(raw) : [];
+    items = items.filter((s) => s !== slug);
+    items.unshift(slug);
+    if (items.length > MAX_RECENT) items = items.slice(0, MAX_RECENT);
+    localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(items));
+  } catch {}
+}
+
+function getRecentlyViewed(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENTLY_VIEWED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+/* ─── Accordion ─── */
+function Accordion({
+  title, children, defaultOpen = false,
+}: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-b border-border/60">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between py-4 text-left text-[11px] uppercase tracking-luxe"
+      >
+        <span>{title}</span>
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[800px] pb-5" : "max-h-0"}`}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Size Guide Modal ─── */
+function SizeGuide({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+      <div className="w-full max-w-lg border border-border bg-background p-8">
+        <div className="flex items-center justify-between">
+          <h3 className="font-serif text-2xl">Size Guide</h3>
+          <button onClick={onClose} aria-label="Close"><X className="h-5 w-5" /></button>
+        </div>
+
+        <div className="mt-6">
+          <h4 className="text-[10px] uppercase tracking-luxe text-muted-foreground">Shoes</h4>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-border text-left text-[10px] uppercase tracking-luxe text-muted-foreground">
+                <tr>
+                  <th className="pb-2 pr-4">EU</th>
+                  <th className="pb-2 pr-4">UK</th>
+                  <th className="pb-2 pr-4">US</th>
+                  <th className="pb-2">CM</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {[
+                  [36, 3, 5.5, 22.5], [37, 4, 6.5, 23.5], [38, 5, 7.5, 24],
+                  [39, 6, 8.5, 25], [40, 7, 9.5, 25.5], [41, 8, 10.5, 26.5],
+                ].map(([eu, uk, us, cm]) => (
+                  <tr key={eu}>
+                    <td className="py-2 pr-4">{eu}</td>
+                    <td className="py-2 pr-4">{uk}</td>
+                    <td className="py-2 pr-4">{us}</td>
+                    <td className="py-2">{cm}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <h4 className="text-[10px] uppercase tracking-luxe text-muted-foreground">Bags</h4>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-border text-left text-[10px] uppercase tracking-luxe text-muted-foreground">
+                <tr>
+                  <th className="pb-2 pr-4">Size</th>
+                  <th className="pb-2 pr-4">Width</th>
+                  <th className="pb-2 pr-4">Height</th>
+                  <th className="pb-2">Depth</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {[
+                  ["Mini", "18 cm", "12 cm", "6 cm"],
+                  ["Small", "22 cm", "16 cm", "8 cm"],
+                  ["Standard", "30 cm", "22 cm", "12 cm"],
+                  ["Large", "38 cm", "28 cm", "14 cm"],
+                ].map(([size, w, h, d]) => (
+                  <tr key={size}>
+                    <td className="py-2 pr-4 font-serif">{size}</td>
+                    <td className="py-2 pr-4">{w}</td>
+                    <td className="py-2 pr-4">{h}</td>
+                    <td className="py-2">{d}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p className="mt-6 text-xs text-muted-foreground">
+          All measurements are approximate. For specific sizing questions, contact us on WhatsApp.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function ProductPage() {
   const { productId } = Route.useParams();
   const { data: product, isLoading } = useProduct(productId);
   const { data: allProducts = [] } = useProducts();
   const cart = useCart();
   const wishlist = useWishlist();
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const gallery = useMemo(
     () => product?.images.map((i) => i.url) ?? [],
@@ -53,6 +169,11 @@ function ProductPage() {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState<{ x: number; y: number } | null>(null);
+
+  // Track recently viewed
+  useEffect(() => {
+    if (product) addToRecentlyViewed(product.slug);
+  }, [product]);
 
   useEffect(() => {
     if (product) {
@@ -70,24 +191,31 @@ function ProductPage() {
     [allProducts, product],
   );
 
+  // Recently viewed products (excluding current)
+  const recentSlugs = useMemo(() => {
+    const slugs = getRecentlyViewed();
+    return slugs.filter((s) => s !== productId);
+  }, [productId]);
+  const recentProducts = useMemo(
+    () => recentSlugs.map((s) => allProducts.find((p) => p.slug === s)).filter(Boolean).slice(0, 4) as typeof allProducts,
+    [recentSlugs, allProducts],
+  );
+
   const next = useCallback(() => {
     if (!gallery.length) return;
     setActive((i) => (i + 1) % gallery.length);
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setZoom(1); setPan({ x: 0, y: 0 });
   }, [gallery.length]);
 
   const prev = useCallback(() => {
     if (!gallery.length) return;
     setActive((i) => (i - 1 + gallery.length) % gallery.length);
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setZoom(1); setPan({ x: 0, y: 0 });
   }, [gallery.length]);
 
   const closeLightbox = useCallback(() => {
     setLightbox(false);
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
+    setZoom(1); setPan({ x: 0, y: 0 });
   }, []);
 
   useEffect(() => {
@@ -121,7 +249,7 @@ function ProductPage() {
       <SiteLayout>
         <section className="mx-auto max-w-xl px-6 py-32 text-center">
           <h1 className="font-serif text-4xl">Piece not found</h1>
-          <p className="mt-4 text-sm text-muted-foreground">The bag you are looking for may have been retired.</p>
+          <p className="mt-4 text-sm text-muted-foreground">The piece you are looking for may have been retired.</p>
           <Link to="/shop" className="mt-8 inline-block text-xs uppercase tracking-luxe link-underline">
             Return to the Boutique
           </Link>
@@ -152,21 +280,36 @@ function ProductPage() {
   } × ${qty}. Total ${formatPKR(product.price * qty)}.`;
 
   const toggleZoom = () => {
-    if (zoom > 1) {
-      setZoom(1);
-      setPan({ x: 0, y: 0 });
-    } else {
-      setZoom(2);
-    }
+    if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2); }
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard");
+    setShareOpen(false);
+  };
+
+  const shareWhatsApp = () => {
+    window.open(whatsappLink(`Check out this piece from ÉCLAT: ${product.name} — ${window.location.href}`), "_blank");
+    setShareOpen(false);
   };
 
   return (
     <SiteLayout>
+      {/* Breadcrumb */}
       <div className="mx-auto max-w-7xl px-6 pt-10">
         <nav className="flex items-center gap-2 text-[11px] uppercase tracking-luxe text-muted-foreground">
-          <Link to="/shop" className="flex items-center gap-1 hover:text-foreground">
+          <Link to="/shop" className="flex items-center gap-1 transition hover:text-foreground">
             <ChevronLeft className="h-3 w-3" /> Shop
           </Link>
+          {product.category && (
+            <>
+              <span>/</span>
+              <Link to="/shop" search={{ cat: product.category.slug }} className="transition hover:text-foreground">
+                {product.category.name}
+              </Link>
+            </>
+          )}
           <span>/</span>
           <span className="text-foreground">{product.name}</span>
         </nav>
@@ -190,8 +333,11 @@ function ProductPage() {
               />
             )}
             {product.is_new && (
-              <span className="absolute left-4 top-4 bg-background/90 px-3 py-1 text-[10px] uppercase tracking-luxe">
-                New
+              <span className="absolute left-4 top-4 bg-background/90 px-3 py-1 text-[10px] uppercase tracking-luxe">New</span>
+            )}
+            {product.is_best_seller && (
+              <span className="absolute left-4 top-4 bg-accent/90 px-3 py-1 text-[10px] uppercase tracking-luxe text-accent-foreground">
+                {product.is_new ? "" : "Best Seller"}
               </span>
             )}
             <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center bg-background/80 text-foreground opacity-0 backdrop-blur transition group-hover:opacity-100">
@@ -257,7 +403,7 @@ function ProductPage() {
                       {selected && (
                         <Check
                           className="absolute inset-0 m-auto h-3.5 w-3.5"
-                          style={{ color: c.hex === "#111111" ? "#fff" : "#111" }}
+                          style={{ color: c.hex === "#111111" || c.hex === "#000000" ? "#fff" : "#111" }}
                         />
                       )}
                     </button>
@@ -270,7 +416,15 @@ function ProductPage() {
           {/* Sizes */}
           {product.sizes.length > 1 && (
             <div className="mt-8">
-              <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Size</span>
+              <div className="flex items-baseline justify-between">
+                <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Size</span>
+                <button
+                  onClick={() => setSizeGuideOpen(true)}
+                  className="flex items-center gap-1 text-[10px] uppercase tracking-luxe text-muted-foreground link-underline"
+                >
+                  <Ruler className="h-3 w-3" /> Size Guide
+                </button>
+              </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.sizes.map((s) => (
                   <button
@@ -291,9 +445,9 @@ function ProductPage() {
           <div className="mt-8 flex items-center gap-6">
             <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Quantity</span>
             <div className="flex items-center border border-border">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2">−</button>
+              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="px-3 py-2 transition hover:bg-secondary">−</button>
               <span className="min-w-[2.5rem] text-center text-sm">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2">+</button>
+              <button onClick={() => setQty((q) => q + 1)} className="px-3 py-2 transition hover:bg-secondary">+</button>
             </div>
           </div>
 
@@ -323,6 +477,25 @@ function ProductPage() {
             >
               <Heart className={`h-4 w-4 ${wished ? "fill-current" : ""}`} />
             </button>
+            <div className="relative">
+              <button
+                onClick={() => setShareOpen(!shareOpen)}
+                aria-label="Share"
+                className="flex h-full items-center justify-center border border-border px-5 transition hover:border-foreground"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+              {shareOpen && (
+                <div className="absolute right-0 top-full z-20 mt-2 w-48 border border-border bg-background p-2 shadow-lg animate-fade-in">
+                  <button onClick={copyLink} className="flex w-full items-center gap-2 px-3 py-2 text-xs uppercase tracking-luxe transition hover:bg-secondary">
+                    <Copy className="h-3 w-3" /> Copy Link
+                  </button>
+                  <button onClick={shareWhatsApp} className="flex w-full items-center gap-2 px-3 py-2 text-xs uppercase tracking-luxe transition hover:bg-secondary">
+                    <MessageCircle className="h-3 w-3" /> WhatsApp
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Reassurance */}
@@ -332,30 +505,45 @@ function ProductPage() {
             <li className="flex items-center gap-2"><RotateCcw className="h-4 w-4 text-accent" /> 14-day exchange</li>
           </ul>
 
-          {product.delivery_info && (
-            <p className="mt-4 text-xs text-muted-foreground">{product.delivery_info}</p>
-          )}
+          {/* Accordion Details */}
+          <div className="mt-8">
+            {product.details.length > 0 && (
+              <Accordion title="The Details" defaultOpen>
+                <ul className="space-y-2 text-sm">
+                  {product.details.map((d) => (
+                    <li key={d} className="flex gap-3">
+                      <span className="mt-2 h-px w-4 bg-accent" /> {d}
+                    </li>
+                  ))}
+                </ul>
+              </Accordion>
+            )}
 
-          {/* Details */}
-          {product.details.length > 0 && (
-            <div className="mt-10 border-t border-border/60 pt-8">
-              <h2 className="text-[10px] uppercase tracking-luxe text-muted-foreground">The Details</h2>
-              <ul className="mt-4 space-y-2 text-sm">
-                {product.details.map((d) => (
-                  <li key={d} className="flex gap-3">
-                    <span className="mt-2 h-px w-4 bg-accent" />
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            {product.delivery_info && (
+              <Accordion title="Delivery & Returns">
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  <p>{product.delivery_info}</p>
+                  <p>Free delivery on orders above PKR 10,000. Standard delivery takes 3-5 business days across Pakistan.</p>
+                  <p>We accept exchanges within 14 days of delivery. Items must be unworn and in original packaging.</p>
+                </div>
+              </Accordion>
+            )}
+
+            <Accordion title="Care Instructions">
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>Store in the provided dust bag when not in use.</p>
+                <p>Avoid direct sunlight and moisture.</p>
+                <p>Clean gently with a soft, dry cloth.</p>
+                <p>For leather products, condition periodically with a suitable leather cream.</p>
+              </div>
+            </Accordion>
+          </div>
         </div>
       </section>
 
       {/* Related */}
       {related.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 pb-24">
+        <section className="mx-auto max-w-7xl px-6 pb-16">
           <div className="flex items-baseline justify-between border-t border-border/60 pt-10">
             <h2 className="font-serif text-2xl md:text-3xl">You may also love</h2>
             <Link to="/shop" className="text-xs uppercase tracking-luxe link-underline">View all</Link>
@@ -367,6 +555,26 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* Recently Viewed */}
+      {recentProducts.length > 0 && (
+        <section className="mx-auto max-w-7xl px-6 pb-24">
+          <div className="flex items-baseline justify-between border-t border-border/60 pt-10">
+            <h2 className="font-serif text-2xl md:text-3xl">
+              <Clock className="mb-1 mr-2 inline h-5 w-5 text-muted-foreground" />
+              Recently Viewed
+            </h2>
+          </div>
+          <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            {recentProducts.map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Size Guide Modal */}
+      {sizeGuideOpen && <SizeGuide onClose={() => setSizeGuideOpen(false)} />}
 
       {/* Lightbox */}
       {lightbox && gallery.length > 0 && (
@@ -409,24 +617,14 @@ function ProductPage() {
           </div>
 
           <div className="relative flex flex-1 items-center justify-center overflow-hidden">
-            <button
-              onClick={prev}
-              aria-label="Previous image"
-              className="absolute left-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:left-8"
-            >
+            <button onClick={prev} aria-label="Previous image" className="absolute left-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:left-8">
               <ArrowLeft className="h-5 w-5" />
             </button>
 
             <div
               className="flex h-full w-full items-center justify-center overflow-hidden"
-              onMouseDown={(e) => {
-                if (zoom <= 1) return;
-                setDragging({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-              }}
-              onMouseMove={(e) => {
-                if (!dragging) return;
-                setPan({ x: e.clientX - dragging.x, y: e.clientY - dragging.y });
-              }}
+              onMouseDown={(e) => { if (zoom <= 1) return; setDragging({ x: e.clientX - pan.x, y: e.clientY - pan.y }); }}
+              onMouseMove={(e) => { if (!dragging) return; setPan({ x: e.clientX - dragging.x, y: e.clientY - dragging.y }); }}
               onMouseUp={() => setDragging(null)}
               onMouseLeave={() => setDragging(null)}
               style={{ cursor: zoom > 1 ? (dragging ? "grabbing" : "grab") : "zoom-in" }}
@@ -435,11 +633,7 @@ function ProductPage() {
                 key={active}
                 src={gallery[active]}
                 alt={`${product.name} — view ${active + 1}`}
-                onClick={(e) => {
-                  if (zoom > 1) return;
-                  e.stopPropagation();
-                  toggleZoom();
-                }}
+                onClick={(e) => { if (zoom > 1) return; e.stopPropagation(); toggleZoom(); }}
                 draggable={false}
                 className="max-h-[80vh] max-w-[85vw] select-none object-contain transition-transform duration-300 ease-out animate-fade-in"
                 style={{
@@ -449,11 +643,7 @@ function ProductPage() {
               />
             </div>
 
-            <button
-              onClick={next}
-              aria-label="Next image"
-              className="absolute right-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:right-8"
-            >
+            <button onClick={next} aria-label="Next image" className="absolute right-4 z-10 flex h-12 w-12 items-center justify-center border border-white/20 text-white transition hover:bg-white/10 md:right-8">
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
@@ -462,11 +652,7 @@ function ProductPage() {
             {gallery.map((src, i) => (
               <button
                 key={src + i}
-                onClick={() => {
-                  setActive(i);
-                  setZoom(1);
-                  setPan({ x: 0, y: 0 });
-                }}
+                onClick={() => { setActive(i); setZoom(1); setPan({ x: 0, y: 0 }); }}
                 aria-label={`View ${i + 1}`}
                 className={`h-16 w-16 overflow-hidden border transition ${
                   active === i ? "border-accent" : "border-white/20 opacity-50 hover:opacity-100"

@@ -1,0 +1,1 @@
+import{u as e}from"./link-CYQq4L2S.js";import{a as t,r as n}from"./index-Ce6HcVWn.js";var r=e();function i(){let e=n.useSearch(),i=n.useNavigate();return(0,r.jsx)(t,{restrictCategorySlug:`shoes`,params:e,setSearch:t=>i({search:{...e,...t}}),onResetFilters:()=>{i({search:{}})}})}export{i as component};

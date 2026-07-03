@@ -55,11 +55,17 @@ function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-6 py-5">
-          <div className="flex items-center">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-5">
+          <div className="flex items-center gap-4">
             <button aria-label="Menu" className="md:hidden" onClick={() => setOpen(true)}>
               <Menu className="h-5 w-5" />
             </button>
+            <Link to="/" className="flex items-center">
+              <span className="font-serif text-2xl tracking-[0.4em] md:text-3xl">ÉCLAT</span>
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-8">
             <nav className="hidden gap-7 text-xs uppercase tracking-luxe md:flex">
               {nav.map((n) => (
                 <Link
@@ -73,50 +79,46 @@ function Header() {
                 </Link>
               ))}
             </nav>
-          </div>
 
-          <Link to="/" className="text-center">
-            <span className="font-serif text-2xl tracking-[0.4em] md:text-3xl">ÉCLAT</span>
-          </Link>
-
-          <div className="flex items-center justify-end gap-4">
-            <button
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Search className="h-4 w-4" />
-            </button>
-            <button aria-label="Toggle theme" onClick={toggle} className="text-muted-foreground hover:text-foreground">
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-            <Link
-              to="/wishlist"
-              aria-label="Wishlist"
-              className="relative text-muted-foreground hover:text-foreground"
-            >
-              <Heart className="h-4 w-4" />
-              {ids.length > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-medium text-accent-foreground">
-                  {ids.length}
-                </span>
-              )}
-            </Link>
-            <Link to="/cart" aria-label="Cart" className="relative text-muted-foreground hover:text-foreground">
-              <ShoppingBag className="h-4 w-4" />
-              {count > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-medium text-accent-foreground">
-                  {count}
-                </span>
-              )}
-            </Link>
-            <Link
-              to={user ? (isAdmin ? "/admin" : "/account") : "/auth"}
-              aria-label="Account"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <User className="h-4 w-4" />
-            </Link>
+            <div className="flex items-center gap-4 md:border-l md:border-border/40 md:pl-8">
+              <button
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <button aria-label="Toggle theme" onClick={toggle} className="text-muted-foreground hover:text-foreground">
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+              <Link
+                to="/wishlist"
+                aria-label="Wishlist"
+                className="relative text-muted-foreground hover:text-foreground"
+              >
+                <Heart className="h-4 w-4" />
+                {ids.length > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-medium text-accent-foreground">
+                    {ids.length}
+                  </span>
+                )}
+              </Link>
+              <Link to="/cart" aria-label="Cart" className="relative text-muted-foreground hover:text-foreground">
+                <ShoppingBag className="h-4 w-4" />
+                {count > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[9px] font-medium text-accent-foreground">
+                    {count}
+                  </span>
+                )}
+              </Link>
+              <Link
+                to={user ? (isAdmin ? "/admin" : "/account") : "/auth"}
+                aria-label="Account"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <User className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </header>
