@@ -4,10 +4,10 @@ import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { B as Expand, D as MessageCircle, G as ChevronLeft, H as Clock, I as Heart, K as ChevronDown, V as Copy, W as ChevronRight, b as Ruler, g as Share2, h as ShieldCheck, m as ShoppingBag, n as ZoomIn, q as Check, r as X, s as Truck, t as ZoomOut, x as RotateCcw } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, d as useCart, f as useWishlist, l as formatPKR, p as whatsappLink } from "./site-layout-Cg2V6MLS.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { n as useProduct, r as useProducts } from "./db-Dt9Bwu6d.mjs";
+import { n as useProduct, r as useProducts } from "./db-B_9CSSwt.mjs";
 import { t as ProductCard } from "./product-card-Ck9qO05U.mjs";
-import { t as Route } from "./collections._productId-E5kLvZjS.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/collections._productId-qkBSPGpL.js
+import { t as Route } from "./collections._productId-DdFpHXiM.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/collections._productId-DrVQ66eD.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var RECENTLY_VIEWED_KEY = "eclat-recently-viewed";

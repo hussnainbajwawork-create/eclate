@@ -5,9 +5,9 @@ import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { A as Mail, D as MessageCircle, J as ArrowRight, P as Instagram, W as ChevronRight, f as Star } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, i as INSTAGRAM_URL, p as whatsappLink } from "./site-layout-Cg2V6MLS.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { r as useProducts } from "./db-Dt9Bwu6d.mjs";
+import { r as useProducts } from "./db-B_9CSSwt.mjs";
 import { t as ProductCard } from "./product-card-Ck9qO05U.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-D26AZFRQ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BqF_WO_T.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var testimonials = [

@@ -2,9 +2,9 @@ import { a as require_jsx_runtime } from "../_libs/react+tanstack__react-query.m
 import { g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { G as ChevronLeft, l as Trash2 } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, f as useWishlist } from "./site-layout-Cg2V6MLS.mjs";
-import { r as useProducts } from "./db-Dt9Bwu6d.mjs";
+import { r as useProducts } from "./db-B_9CSSwt.mjs";
 import { t as ProductCard } from "./product-card-Ck9qO05U.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/wishlist-Cy2Mz54N.js
+//#region node_modules/.nitro/vite/services/ssr/assets/wishlist-xMHjeuay.js
 var import_jsx_runtime = require_jsx_runtime();
 function Wishlist() {
 	const { ids, clear } = useWishlist();

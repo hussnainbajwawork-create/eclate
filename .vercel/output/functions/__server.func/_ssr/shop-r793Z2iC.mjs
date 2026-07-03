@@ -2,10 +2,10 @@ import { i as __toESM } from "../_runtime.mjs";
 import { a as require_jsx_runtime, o as require_react } from "../_libs/react+tanstack__react-query.mjs";
 import { G as ChevronLeft, M as List, W as ChevronRight, X as Grid3x3, p as SlidersHorizontal, r as X, y as Search } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout } from "./site-layout-Cg2V6MLS.mjs";
-import { r as useProducts, t as useCategories } from "./db-Dt9Bwu6d.mjs";
+import { r as useProducts, t as useCategories } from "./db-B_9CSSwt.mjs";
 import { t as ProductCard } from "./product-card-Ck9qO05U.mjs";
 import { i as stringType, n as numberType, r as objectType, t as enumType } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/shop-C_8OONLI.js
+//#region node_modules/.nitro/vite/services/ssr/assets/shop-r793Z2iC.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var shopSearchSchema = objectType({

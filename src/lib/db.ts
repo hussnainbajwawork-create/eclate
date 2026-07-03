@@ -46,32 +46,47 @@ function normalizeProduct(p: any): Product {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("active", true)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []).map(normalizeProduct);
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .eq("active", true)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data ?? []).map(normalizeProduct);
+  } catch (err) {
+    console.error("[fetchProducts] Error fetching products:", err);
+    return [];
+  }
 }
 
 export async function fetchProductBySlug(slug: string): Promise<Product | null> {
-  const { data, error } = await supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) throw error;
-  return data ? normalizeProduct(data) : null;
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? normalizeProduct(data) : null;
+  } catch (err) {
+    console.error(`[fetchProductBySlug] Error fetching product "${slug}":`, err);
+    return null;
+  }
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .order("sort_order");
-  if (error) throw error;
-  return data ?? [];
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order");
+    if (error) throw error;
+    return data ?? [];
+  } catch (err) {
+    console.error("[fetchCategories] Error fetching categories:", err);
+    return [];
+  }
 }
 
 export function useProducts() {

@@ -1,6 +1,6 @@
 import { t as supabase } from "./client-B53tpCKD.mjs";
 import { n as useQuery } from "../_libs/react+tanstack__react-query.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/db-Dt9Bwu6d.js
+//#region node_modules/.nitro/vite/services/ssr/assets/db-B_9CSSwt.js
 var PRODUCT_SELECT = "*, category:categories(*), images:product_images(*), colors:product_colors(*)";
 function normalizeProduct(p) {
 	return {
@@ -11,19 +11,34 @@ function normalizeProduct(p) {
 	};
 }
 async function fetchProducts() {
-	const { data, error } = await supabase.from("products").select(PRODUCT_SELECT).eq("active", true).order("created_at", { ascending: false });
-	if (error) throw error;
-	return (data ?? []).map(normalizeProduct);
+	try {
+		const { data, error } = await supabase.from("products").select(PRODUCT_SELECT).eq("active", true).order("created_at", { ascending: false });
+		if (error) throw error;
+		return (data ?? []).map(normalizeProduct);
+	} catch (err) {
+		console.error("[fetchProducts] Error fetching products:", err);
+		return [];
+	}
 }
 async function fetchProductBySlug(slug) {
-	const { data, error } = await supabase.from("products").select(PRODUCT_SELECT).eq("slug", slug).maybeSingle();
-	if (error) throw error;
-	return data ? normalizeProduct(data) : null;
+	try {
+		const { data, error } = await supabase.from("products").select(PRODUCT_SELECT).eq("slug", slug).maybeSingle();
+		if (error) throw error;
+		return data ? normalizeProduct(data) : null;
+	} catch (err) {
+		console.error(`[fetchProductBySlug] Error fetching product "${slug}":`, err);
+		return null;
+	}
 }
 async function fetchCategories() {
-	const { data, error } = await supabase.from("categories").select("*").order("sort_order");
-	if (error) throw error;
-	return data ?? [];
+	try {
+		const { data, error } = await supabase.from("categories").select("*").order("sort_order");
+		if (error) throw error;
+		return data ?? [];
+	} catch (err) {
+		console.error("[fetchCategories] Error fetching categories:", err);
+		return [];
+	}
 }
 function useProducts() {
 	return useQuery({

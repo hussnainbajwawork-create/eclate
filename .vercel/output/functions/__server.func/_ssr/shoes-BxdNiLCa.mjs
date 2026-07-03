@@ -1,7 +1,7 @@
 import { m as createFileRoute, p as lazyRouteComponent } from "../_libs/@tanstack/react-router+[...].mjs";
-import { n as shopSearchSchema } from "./shop-C_8OONLI.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/shoes-BpnGpvV5.js
-var $$splitComponentImporter = () => import("./shoes-Cv6PV40I.mjs");
+import { n as shopSearchSchema } from "./shop-r793Z2iC.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/shoes-BxdNiLCa.js
+var $$splitComponentImporter = () => import("./shoes-CAGqfXe5.mjs");
 var Route = createFileRoute("/shoes")({
 	validateSearch: shopSearchSchema,
 	head: () => ({ meta: [{ title: "Shoes — ÉCLAT" }, {

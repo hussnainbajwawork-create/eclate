@@ -5,9 +5,9 @@ import { F as useNavigate, g as Link } from "../_libs/@tanstack/react-router+[..
 import { $ as ChartColumn, A as Mail, D as MessageCircle, F as Image, H as Clock, K as ChevronDown, N as LayoutDashboard, Q as CircleCheckBig, R as Eye, S as Plus, T as Package, U as ChevronUp, Y as TriangleAlert, Z as CircleX, _ as Settings, c as TrendingUp, i as Users, j as LogOut, l as Trash2, m as ShoppingBag, o as Upload, r as X, s as Truck, u as Tag, w as Pencil, y as Search, z as EyeOff } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, l as formatPKR, u as useAuth } from "./site-layout-Cg2V6MLS.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
-import { r as useProducts, t as useCategories } from "./db-Dt9Bwu6d.mjs";
+import { r as useProducts, t as useCategories } from "./db-B_9CSSwt.mjs";
 import { a as Area, c as ResponsiveContainer, i as XAxis, l as Tooltip, n as BarChart, o as CartesianGrid, r as YAxis, s as Bar, t as AreaChart } from "../_libs/recharts+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/admin-eOCNSI-A.js
+//#region node_modules/.nitro/vite/services/ssr/assets/admin-BK3kU99d.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 async function fetchDashboardStats() {

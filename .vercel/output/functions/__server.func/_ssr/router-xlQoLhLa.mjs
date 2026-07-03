@@ -3,11 +3,11 @@ import { I as useRouter, c as HeadContent, d as createRouter, f as Outlet, g as 
 import { n as CartProvider, s as WishlistProvider, t as AuthProvider } from "./site-layout-Cg2V6MLS.mjs";
 import { t as Toaster } from "../_libs/sonner.mjs";
 import { n as QueryClient } from "../_libs/tanstack__query-core.mjs";
-import { t as Route$11 } from "./collections._productId-E5kLvZjS.mjs";
-import { t as Route$12 } from "./handbags-CG2kzlc-.mjs";
-import { t as Route$13 } from "./shop-BnONGFAE.mjs";
-import { t as Route$14 } from "./shoes-BpnGpvV5.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-CBhfgi04.js
+import { t as Route$11 } from "./collections._productId-DdFpHXiM.mjs";
+import { t as Route$12 } from "./handbags-BMCNI2Co.mjs";
+import { t as Route$13 } from "./shop-Fw1FE7Nu.mjs";
+import { t as Route$14 } from "./shoes-BxdNiLCa.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/router-xlQoLhLa.js
 var import_jsx_runtime = require_jsx_runtime();
 var styles_default = "/assets/styles-DRBrAMX6.css";
 function NotFoundComponent() {
@@ -143,7 +143,7 @@ function RootComponent() {
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(WishlistProvider, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(CartProvider, { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Outlet, {}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Toaster, { position: "top-center" })] }) }) })
 	});
 }
-var $$splitComponentImporter$9 = () => import("./wishlist-Cy2Mz54N.mjs");
+var $$splitComponentImporter$9 = () => import("./wishlist-xMHjeuay.mjs");
 var Route$9 = createFileRoute("/wishlist")({
 	head: () => ({ meta: [{ title: "Wishlist — ÉCLAT" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$9, "component")
@@ -171,7 +171,7 @@ var Route$5 = createFileRoute("/auth")({
 	head: () => ({ meta: [{ title: "Sign In — ÉCLAT" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$5, "component")
 });
-var $$splitComponentImporter$4 = () => import("./admin-eOCNSI-A.mjs");
+var $$splitComponentImporter$4 = () => import("./admin-BK3kU99d.mjs");
 var Route$4 = createFileRoute("/admin")({
 	head: () => ({ meta: [{ title: "Admin — ÉCLAT" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$4, "component")
@@ -189,7 +189,7 @@ var Route$2 = createFileRoute("/about")({
 	}] }),
 	component: lazyRouteComponent($$splitComponentImporter$2, "component")
 });
-var $$splitComponentImporter$1 = () => import("./routes-D26AZFRQ.mjs");
+var $$splitComponentImporter$1 = () => import("./routes-BqF_WO_T.mjs");
 var Route$1 = createFileRoute("/")({
 	head: () => ({ meta: [
 		{ title: "ÉCLAT — Timeless Elegance, Crafted for Pakistan" },
