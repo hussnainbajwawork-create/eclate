@@ -226,19 +226,6 @@ var TriangleAlert = createLucideIcon("triangle-alert", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var ArrowLeft = createLucideIcon("arrow-left", [["path", {
-	d: "m12 19-7-7 7-7",
-	key: "1l729n"
-}], ["path", {
-	d: "M19 12H5",
-	key: "x3x0zl"
-}]]);
-/**
-* @license lucide-react v0.575.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
 var ArrowRight = createLucideIcon("arrow-right", [["path", {
 	d: "M5 12h14",
 	key: "1ays0h"
@@ -1191,4 +1178,4 @@ var ZoomOut = createLucideIcon("zoom-out", [
 	}]
 ]);
 //#endregion
-export { CircleCheckBig as $, Mail as A, Expand as B, Phone as C, MessageCircle as D, Moon as E, Image as F, ChevronLeft as G, Clock as H, Heart as I, ArrowRight as J, ChevronDown as K, Facebook as L, List as M, LayoutDashboard as N, Menu as O, Instagram as P, CircleX as Q, Eye as R, Plus as S, Package as T, ChevronUp as U, Copy as V, ChevronRight as W, TriangleAlert as X, ArrowLeft as Y, Grid3x3 as Z, Settings as _, User as a, Ruler as b, TrendingUp as c, Sun as d, ChartColumn as et, Star as f, Share2 as g, ShieldCheck as h, Users as i, LogOut as j, MapPin as k, Trash2 as l, ShoppingBag as m, ZoomIn as n, Upload as o, SlidersHorizontal as p, Check as q, X as r, Truck as s, ZoomOut as t, Tag as u, Send as v, Pencil as w, RotateCcw as x, Search as y, EyeOff as z };
+export { ChartColumn as $, Mail as A, Expand as B, Phone as C, MessageCircle as D, Moon as E, Image as F, ChevronLeft as G, Clock as H, Heart as I, ArrowRight as J, ChevronDown as K, Facebook as L, List as M, LayoutDashboard as N, Menu as O, Instagram as P, CircleCheckBig as Q, Eye as R, Plus as S, Package as T, ChevronUp as U, Copy as V, ChevronRight as W, Grid3x3 as X, TriangleAlert as Y, CircleX as Z, Settings as _, User as a, Ruler as b, TrendingUp as c, Sun as d, Star as f, Share2 as g, ShieldCheck as h, Users as i, LogOut as j, MapPin as k, Trash2 as l, ShoppingBag as m, ZoomIn as n, Upload as o, SlidersHorizontal as p, Check as q, X as r, Truck as s, ZoomOut as t, Tag as u, Send as v, Pencil as w, RotateCcw as x, Search as y, EyeOff as z };

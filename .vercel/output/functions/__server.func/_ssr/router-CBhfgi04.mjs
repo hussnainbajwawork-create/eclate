@@ -1,5 +1,4 @@
-import { i as __toESM } from "../_runtime.mjs";
-import { a as require_jsx_runtime, o as require_react, r as QueryClientProvider } from "../_libs/react+tanstack__react-query.mjs";
+import { a as require_jsx_runtime, r as QueryClientProvider } from "../_libs/react+tanstack__react-query.mjs";
 import { I as useRouter, c as HeadContent, d as createRouter, f as Outlet, g as Link, h as createRootRouteWithContext, k as redirect, m as createFileRoute, p as lazyRouteComponent, s as Scripts } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as CartProvider, s as WishlistProvider, t as AuthProvider } from "./site-layout-Cg2V6MLS.mjs";
 import { t as Toaster } from "../_libs/sonner.mjs";
@@ -8,22 +7,9 @@ import { t as Route$11 } from "./collections._productId-E5kLvZjS.mjs";
 import { t as Route$12 } from "./handbags-CG2kzlc-.mjs";
 import { t as Route$13 } from "./shop-BnONGFAE.mjs";
 import { t as Route$14 } from "./shoes-BpnGpvV5.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-5LQ8rZXP.js
-var import_react = /* @__PURE__ */ __toESM(require_react());
+//#region node_modules/.nitro/vite/services/ssr/assets/router-CBhfgi04.js
 var import_jsx_runtime = require_jsx_runtime();
-var styles_default = "/assets/styles-D0rj7_mW.css";
-function reportLovableError(error, context = {}) {
-	if (typeof window === "undefined") return;
-	window.__lovableEvents?.captureException?.(error, {
-		source: "react_error_boundary",
-		route: window.location.pathname,
-		...context
-	}, {
-		mechanism: "react_error_boundary",
-		handled: false,
-		severity: "error"
-	});
-}
+var styles_default = "/assets/styles-DRBrAMX6.css";
 function NotFoundComponent() {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex min-h-screen items-center justify-center bg-background px-4",
@@ -57,9 +43,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }) {
 	console.error(error);
 	const router = useRouter();
-	(0, import_react.useEffect)(() => {
-		reportLovableError(error, { boundary: "tanstack_root_error_component" });
-	}, [error]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex min-h-screen items-center justify-center bg-background px-4",
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -183,7 +166,7 @@ var Route$6 = createFileRoute("/cart")({
 	head: () => ({ meta: [{ title: "Cart — ÉCLAT" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$6, "component")
 });
-var $$splitComponentImporter$5 = () => import("./auth-B74OA4Ry.mjs");
+var $$splitComponentImporter$5 = () => import("./auth-DVHyIENi.mjs");
 var Route$5 = createFileRoute("/auth")({
 	head: () => ({ meta: [{ title: "Sign In — ÉCLAT" }] }),
 	component: lazyRouteComponent($$splitComponentImporter$5, "component")

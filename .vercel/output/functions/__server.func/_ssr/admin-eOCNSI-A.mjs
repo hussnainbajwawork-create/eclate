@@ -2,7 +2,7 @@ import { i as __toESM } from "../_runtime.mjs";
 import { t as supabase } from "./client-B53tpCKD.mjs";
 import { a as require_jsx_runtime, i as useQueryClient, n as useQuery, o as require_react, t as useMutation } from "../_libs/react+tanstack__react-query.mjs";
 import { F as useNavigate, g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
-import { $ as CircleCheckBig, A as Mail, D as MessageCircle, F as Image, H as Clock, K as ChevronDown, N as LayoutDashboard, Q as CircleX, R as Eye, S as Plus, T as Package, U as ChevronUp, X as TriangleAlert, _ as Settings, c as TrendingUp, et as ChartColumn, i as Users, j as LogOut, l as Trash2, m as ShoppingBag, o as Upload, r as X, s as Truck, u as Tag, w as Pencil, y as Search, z as EyeOff } from "../_libs/lucide-react.mjs";
+import { $ as ChartColumn, A as Mail, D as MessageCircle, F as Image, H as Clock, K as ChevronDown, N as LayoutDashboard, Q as CircleCheckBig, R as Eye, S as Plus, T as Package, U as ChevronUp, Y as TriangleAlert, Z as CircleX, _ as Settings, c as TrendingUp, i as Users, j as LogOut, l as Trash2, m as ShoppingBag, o as Upload, r as X, s as Truck, u as Tag, w as Pencil, y as Search, z as EyeOff } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, l as formatPKR, u as useAuth } from "./site-layout-Cg2V6MLS.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 import { r as useProducts, t as useCategories } from "./db-Dt9Bwu6d.mjs";

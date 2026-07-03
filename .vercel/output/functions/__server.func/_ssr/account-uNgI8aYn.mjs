@@ -2,7 +2,7 @@ import { i as __toESM } from "../_runtime.mjs";
 import { t as supabase } from "./client-B53tpCKD.mjs";
 import { a as require_jsx_runtime, o as require_react } from "../_libs/react+tanstack__react-query.mjs";
 import { F as useNavigate, g as Link } from "../_libs/@tanstack/react-router+[...].mjs";
-import { $ as CircleCheckBig, A as Mail, C as Phone, H as Clock, T as Package, a as User, j as LogOut, k as MapPin, q as Check, w as Pencil } from "../_libs/lucide-react.mjs";
+import { A as Mail, C as Phone, H as Clock, Q as CircleCheckBig, T as Package, a as User, j as LogOut, k as MapPin, q as Check, w as Pencil } from "../_libs/lucide-react.mjs";
 import { a as SiteLayout, l as formatPKR, u as useAuth } from "./site-layout-Cg2V6MLS.mjs";
 import { n as toast } from "../_libs/sonner.mjs";
 //#region node_modules/.nitro/vite/services/ssr/assets/account-uNgI8aYn.js

@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DAt_ACYa.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-DH5HDIp2.js
 var tsrStartManifest = () => ({ routes: {
 	__root__: {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/__root.tsx",
@@ -19,7 +19,7 @@ var tsrStartManifest = () => ({ routes: {
 			"/collections/"
 		],
 		preloads: [
-			"/assets/index-Ce6HcVWn.js",
+			"/assets/index-pFII7IgD.js",
 			"/assets/link-CYQq4L2S.js",
 			"/assets/site-layout-CPeAsXG_.js",
 			"/assets/db-DHukvhMW.js"
@@ -27,13 +27,13 @@ var tsrStartManifest = () => ({ routes: {
 		scripts: [{ attrs: {
 			type: "module",
 			async: !0,
-			src: "/assets/index-Ce6HcVWn.js"
+			src: "/assets/index-pFII7IgD.js"
 		} }]
 	},
 	"/": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/index.tsx",
 		children: void 0,
-		preloads: ["/assets/routes-DtV-ihEr.js", "/assets/mail-DuWmvN0C.js"]
+		preloads: ["/assets/routes-BEKfkamf.js", "/assets/mail-DuWmvN0C.js"]
 	},
 	"/about": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/about.tsx",
@@ -44,7 +44,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/account.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/account-BhqpP384.js",
+			"/assets/account-C6PzhzS4.js",
 			"/assets/pencil-Bgv3TYIg.js",
 			"/assets/check-CohEVO7U.js",
 			"/assets/clock-Cmh25QHu.js",
@@ -56,7 +56,7 @@ var tsrStartManifest = () => ({ routes: {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/admin.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/admin-Dsixcidv.js",
+			"/assets/admin-Bzw1siUM.js",
 			"/assets/pencil-Bgv3TYIg.js",
 			"/assets/truck-BrFQp8dQ.js",
 			"/assets/clock-Cmh25QHu.js",
@@ -67,23 +67,23 @@ var tsrStartManifest = () => ({ routes: {
 	"/auth": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/auth.tsx",
 		children: void 0,
-		preloads: ["/assets/auth-BYbbE_ek.js"]
+		preloads: ["/assets/auth-BBglVSd5.js"]
 	},
 	"/cart": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/cart.tsx",
 		children: void 0,
-		preloads: ["/assets/cart-B-xkiX4B.js", "/assets/trash-2-D0836MK6.js"]
+		preloads: ["/assets/cart-D51zcn9Y.js", "/assets/trash-2-D0836MK6.js"]
 	},
 	"/checkout": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/checkout.tsx",
 		children: void 0,
-		preloads: ["/assets/checkout-C1geQyxK.js", "/assets/check-CohEVO7U.js"]
+		preloads: ["/assets/checkout-BN3Hp-8f.js", "/assets/check-CohEVO7U.js"]
 	},
 	"/contact": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/contact.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/contact-BcTQKTyC.js",
+			"/assets/contact-Dvf_96vI.js",
 			"/assets/check-CohEVO7U.js",
 			"/assets/mail-DuWmvN0C.js",
 			"/assets/phone-Coymrbs3.js"
@@ -92,28 +92,28 @@ var tsrStartManifest = () => ({ routes: {
 	"/handbags": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/handbags.tsx",
 		children: void 0,
-		preloads: ["/assets/handbags-BULXTjQ3.js"]
+		preloads: ["/assets/handbags-B3kuUEQZ.js"]
 	},
 	"/shoes": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/shoes.tsx",
 		children: void 0,
-		preloads: ["/assets/shoes-LkdS308R.js"]
+		preloads: ["/assets/shoes-Bq9YM_Gb.js"]
 	},
 	"/shop": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/shop.tsx",
 		children: void 0,
-		preloads: ["/assets/shop-BQEbz3s5.js"]
+		preloads: ["/assets/shop-B5F13Brb.js"]
 	},
 	"/wishlist": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/wishlist.tsx",
 		children: void 0,
-		preloads: ["/assets/wishlist-CpMLvph4.js", "/assets/trash-2-D0836MK6.js"]
+		preloads: ["/assets/wishlist-PAHMS4Ln.js", "/assets/trash-2-D0836MK6.js"]
 	},
 	"/collections/$productId": {
 		filePath: "/Users/hanzlakalim/Work/clat-luxury-prototype/src/routes/collections.$productId.tsx",
 		children: void 0,
 		preloads: [
-			"/assets/collections._productId-DyuZ9H6S.js",
+			"/assets/collections._productId-Do-3Cbq7.js",
 			"/assets/check-CohEVO7U.js",
 			"/assets/truck-BrFQp8dQ.js",
 			"/assets/clock-Cmh25QHu.js"
