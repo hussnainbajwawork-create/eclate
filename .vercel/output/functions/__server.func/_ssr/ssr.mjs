@@ -10,6 +10,9 @@ function record(error) {
 if (typeof globalThis.addEventListener === "function") {
 	globalThis.addEventListener("error", (event) => record(event.error ?? event));
 	globalThis.addEventListener("unhandledrejection", (event) => record(event.reason));
+} else if (typeof process !== "undefined" && typeof process.on === "function") {
+	process.on("uncaughtException", (error) => record(error));
+	process.on("unhandledRejection", (reason) => record(reason));
 }
 function consumeLastCapturedError() {
 	if (!lastCapturedError) return void 0;
