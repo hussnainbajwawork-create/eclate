@@ -61,7 +61,7 @@ function Header() {
               <Menu className="h-5 w-5" />
             </button>
             <Link to="/" className="flex items-center">
-              <span className="font-serif text-2xl tracking-[0.4em] md:text-3xl">ÉCLAT</span>
+              <img src="/logo.png" alt="ÉCLAT" className="h-8 md:h-12 w-auto object-contain dark:invert" />
             </Link>
           </div>
 
@@ -127,7 +127,7 @@ function Header() {
         <div className="fixed inset-0 z-[60] flex flex-col bg-background animate-fade-in md:hidden">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-border/60 px-6 py-5">
             <span />
-            <span className="text-center font-serif text-2xl tracking-[0.4em]">ÉCLAT</span>
+            <img src="/logo.png" alt="ÉCLAT" className="h-8 w-auto object-contain justify-self-center dark:invert" />
             <button aria-label="Close" onClick={() => setOpen(false)} className="justify-self-end">
               <X className="h-5 w-5" />
             </button>
@@ -205,7 +205,7 @@ function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div>
-            <div className="font-serif text-2xl tracking-[0.4em]">ÉCLAT</div>
+            <img src="/logo.png" alt="ÉCLAT" className="h-10 w-auto object-contain mb-4 dark:invert" />
             <p className="mt-4 text-sm text-muted-foreground">Timeless elegance, crafted for Pakistan.</p>
           </div>
           <div>
