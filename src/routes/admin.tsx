@@ -1224,7 +1224,7 @@ function SettingsTab() {
   const [settings, setSettings] = useState({
     whatsapp: "923001234567",
     email: "hello@eclat.pk",
-    instagram: "https://instagram.com/eclat.pk",
+    instagram: "https://www.instagram.com/eclat14_?igsh=bTN0c2hjdWgwbTF4",
     facebook: "https://facebook.com/eclat.pk",
     freeShippingThreshold: "10000",
     deliveryCharge: "300",

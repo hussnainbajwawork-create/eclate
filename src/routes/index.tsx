@@ -127,7 +127,7 @@ function Home() {
           poster="https://images.unsplash.com/photo-1591348122449-02525d70379b?auto=format&fit=crop&w=2000&q=80"
         >
           <source
-            src="https://media.w3.org/2010/05/sintel/trailer.mp4"
+            src="/clate-hero-video.mp4"
             type="video/mp4"
           />
           <img
