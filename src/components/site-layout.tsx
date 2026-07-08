@@ -16,7 +16,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
 import { useAuth } from "@/lib/auth-context";
-import { WHATSAPP_NUMBER, INSTAGRAM_URL, FACEBOOK_URL, whatsappLink } from "@/lib/format";
+import { INSTAGRAM_URL, FACEBOOK_URL } from "@/lib/format";
 
 function useDarkMode() {
   const [dark, setDark] = useState(false);
@@ -231,11 +231,6 @@ function Footer() {
                   <Facebook className="h-4 w-4" /> Facebook
                 </a>
               </li>
-              <li>
-                <a href={whatsappLink("Hello ÉCLAT, I'd like to know more.")} target="_blank" rel="noreferrer" className="flex items-center gap-2 link-underline">
-                  <MessageCircle className="h-4 w-4" /> WhatsApp
-                </a>
-              </li>
             </ul>
           </div>
           <div>
@@ -243,7 +238,7 @@ function Footer() {
             <p className="mt-4 text-sm text-muted-foreground">
               Lahore · Karachi · Islamabad<br />
               hello@eclat.pk<br />
-              +{WHATSAPP_NUMBER}
+              +92 300 1234567
             </p>
           </div>
         </div>
@@ -256,27 +251,12 @@ function Footer() {
   );
 }
 
-function WhatsappFloat() {
-  return (
-    <a
-      href={whatsappLink("Hello ÉCLAT, I have a question about your bags.")}
-      target="_blank"
-      rel="noreferrer"
-      aria-label="Chat on WhatsApp"
-      className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 transition hover:scale-105"
-    >
-      <MessageCircle className="h-6 w-6" />
-    </a>
-  );
-}
-
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <WhatsappFloat />
     </div>
   );
 }

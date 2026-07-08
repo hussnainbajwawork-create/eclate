@@ -22,6 +22,8 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionsIndexRouteImport } from './routes/collections.index'
+import { Route as TrackOrderOrderIdRouteImport } from './routes/track-order.$orderId'
+import { Route as PayOrderIdRouteImport } from './routes/pay.$orderId'
 import { Route as CollectionsProductIdRouteImport } from './routes/collections.$productId'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -89,6 +91,16 @@ const CollectionsIndexRoute = CollectionsIndexRouteImport.update({
   path: '/collections/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrackOrderOrderIdRoute = TrackOrderOrderIdRouteImport.update({
+  id: '/track-order/$orderId',
+  path: '/track-order/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayOrderIdRoute = PayOrderIdRouteImport.update({
+  id: '/pay/$orderId',
+  path: '/pay/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionsProductIdRoute = CollectionsProductIdRouteImport.update({
   id: '/collections/$productId',
   path: '/collections/$productId',
@@ -109,6 +121,8 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/wishlist': typeof WishlistRoute
   '/collections/$productId': typeof CollectionsProductIdRoute
+  '/pay/$orderId': typeof PayOrderIdRoute
+  '/track-order/$orderId': typeof TrackOrderOrderIdRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -125,6 +139,8 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/wishlist': typeof WishlistRoute
   '/collections/$productId': typeof CollectionsProductIdRoute
+  '/pay/$orderId': typeof PayOrderIdRoute
+  '/track-order/$orderId': typeof TrackOrderOrderIdRoute
   '/collections': typeof CollectionsIndexRoute
 }
 export interface FileRoutesById {
@@ -142,6 +158,8 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/wishlist': typeof WishlistRoute
   '/collections/$productId': typeof CollectionsProductIdRoute
+  '/pay/$orderId': typeof PayOrderIdRoute
+  '/track-order/$orderId': typeof TrackOrderOrderIdRoute
   '/collections/': typeof CollectionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -160,6 +178,8 @@ export interface FileRouteTypes {
     | '/shop'
     | '/wishlist'
     | '/collections/$productId'
+    | '/pay/$orderId'
+    | '/track-order/$orderId'
     | '/collections/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,6 +196,8 @@ export interface FileRouteTypes {
     | '/shop'
     | '/wishlist'
     | '/collections/$productId'
+    | '/pay/$orderId'
+    | '/track-order/$orderId'
     | '/collections'
   id:
     | '__root__'
@@ -192,6 +214,8 @@ export interface FileRouteTypes {
     | '/shop'
     | '/wishlist'
     | '/collections/$productId'
+    | '/pay/$orderId'
+    | '/track-order/$orderId'
     | '/collections/'
   fileRoutesById: FileRoutesById
 }
@@ -209,6 +233,8 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   WishlistRoute: typeof WishlistRoute
   CollectionsProductIdRoute: typeof CollectionsProductIdRoute
+  PayOrderIdRoute: typeof PayOrderIdRoute
+  TrackOrderOrderIdRoute: typeof TrackOrderOrderIdRoute
   CollectionsIndexRoute: typeof CollectionsIndexRoute
 }
 
@@ -305,6 +331,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/track-order/$orderId': {
+      id: '/track-order/$orderId'
+      path: '/track-order/$orderId'
+      fullPath: '/track-order/$orderId'
+      preLoaderRoute: typeof TrackOrderOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/$orderId': {
+      id: '/pay/$orderId'
+      path: '/pay/$orderId'
+      fullPath: '/pay/$orderId'
+      preLoaderRoute: typeof PayOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collections/$productId': {
       id: '/collections/$productId'
       path: '/collections/$productId'
@@ -329,6 +369,8 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   WishlistRoute: WishlistRoute,
   CollectionsProductIdRoute: CollectionsProductIdRoute,
+  PayOrderIdRoute: PayOrderIdRoute,
+  TrackOrderOrderIdRoute: TrackOrderOrderIdRoute,
   CollectionsIndexRoute: CollectionsIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -5,7 +5,8 @@ import {
   BarChart3, Users, Mail, Settings, TrendingUp, AlertTriangle,
   ChevronDown, ChevronUp, Eye, EyeOff, MessageCircle, Clock,
   CheckCircle, Truck, XCircle, Search, Filter, ArrowUp, ArrowDown,
-  Image as ImageIcon, LayoutDashboard, Bell,
+  Image as ImageIcon, LayoutDashboard, Bell, CreditCard, Banknote,
+  ShieldCheck, ThumbsUp, ThumbsDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
@@ -16,10 +17,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { formatPKR } from "@/lib/format";
 import {
   useDashboardStats, useAdminOrders, useUpdateOrderStatus,
+  useApprovePayment, useRejectPayment,
   useCustomers, useContactMessages, useMarkMessageRead,
   useDeleteProduct, useSaveProduct, useDeleteCategory, useSaveCategory,
   uploadProductImage, useRevenueChart, useNewsletterSubscribers,
-  type OrderRow, type ProductPayload,
+  type OrderRow, type ProductPayload, type PaymentRow,
 } from "@/lib/admin-data";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -198,6 +200,7 @@ function StatCard({ label, value, sub, icon: Icon, accent }: { label: string; va
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
     pending: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
+    payment_submitted: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
     confirmed: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
     shipped: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
     delivered: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400",
@@ -205,15 +208,19 @@ function StatusBadge({ status }: { status: string }) {
   };
   const icons: Record<string, any> = {
     pending: Clock,
+    payment_submitted: CreditCard,
     confirmed: CheckCircle,
     shipped: Truck,
     delivered: CheckCircle,
     cancelled: XCircle,
   };
+  const labels: Record<string, string> = {
+    payment_submitted: "payment submitted",
+  };
   const Icon = icons[status] ?? Clock;
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-[10px] font-medium uppercase tracking-luxe ${styles[status] ?? "bg-secondary text-foreground"}`}>
-      <Icon className="h-3 w-3" /> {status}
+      <Icon className="h-3 w-3" /> {labels[status] ?? status}
     </span>
   );
 }
@@ -825,9 +832,14 @@ function CategoriesTab() {
 function OrdersTab() {
   const { data: orders = [], isLoading } = useAdminOrders();
   const updateStatus = useUpdateOrderStatus();
+  const approvePayment = useApprovePayment();
+  const rejectPayment = useRejectPayment();
   const [searchQ, setSearchQ] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
+  const [rejectNotes, setRejectNotes] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState<{ paymentId: string; orderId: string } | null>(null);
 
   const filtered = orders.filter((o) => {
     if (filterStatus !== "all" && o.status !== filterStatus) return false;
@@ -842,6 +854,32 @@ function OrdersTab() {
     try {
       await updateStatus.mutateAsync({ id, status });
       toast.success("Order updated");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleApprove = async (paymentId: string, orderId: string) => {
+    if (!confirm("Approve this payment and confirm the order?")) return;
+    try {
+      await approvePayment.mutateAsync({ paymentId, orderId });
+      toast.success("Payment approved — order confirmed");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!showRejectModal) return;
+    try {
+      await rejectPayment.mutateAsync({
+        paymentId: showRejectModal.paymentId,
+        orderId: showRejectModal.orderId,
+        notes: rejectNotes || undefined,
+      });
+      toast.success("Payment rejected — customer can resubmit");
+      setShowRejectModal(null);
+      setRejectNotes("");
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -869,8 +907,8 @@ function OrdersTab() {
           className="border border-border bg-transparent px-3 py-2.5 text-xs uppercase tracking-luxe transition focus:border-accent focus:outline-none"
         >
           <option value="all">All Statuses</option>
-          {["pending", "confirmed", "shipped", "delivered", "cancelled"].map((s) => (
-            <option key={s} value={s}>{s}</option>
+          {["pending", "payment_submitted", "confirmed", "shipped", "delivered", "cancelled"].map((s) => (
+            <option key={s} value={s}>{s.replace("_", " ")}</option>
           ))}
         </select>
       </div>
@@ -881,8 +919,13 @@ function OrdersTab() {
         <ul className="mt-5 space-y-3">
           {filtered.map((o) => {
             const expanded = expandedId === o.id;
+            const payment = o.order_payments?.[0] ?? null;
+            const halfAmount = Math.ceil(Number(o.total) / 2);
+
             return (
-              <li key={o.id} className="border border-border/60 bg-card transition hover:shadow-sm">
+              <li key={o.id} className={`border bg-card transition hover:shadow-sm ${
+                o.status === "payment_submitted" ? "border-orange-400/50" : "border-border/60"
+              }`}>
                 <button
                   type="button"
                   onClick={() => setExpandedId(expanded ? null : o.id)}
@@ -892,6 +935,17 @@ function OrdersTab() {
                     <span className="font-mono text-xs text-muted-foreground">#{o.id.slice(0, 8)}</span>
                     <span className="font-serif text-base">{o.customer_name}</span>
                     <StatusBadge status={o.status} />
+                    {payment && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] uppercase tracking-luxe ${
+                        payment.status === "approved"
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          : payment.status === "rejected"
+                            ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                            : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                      }`}>
+                        <Banknote className="h-2.5 w-2.5" /> {payment.status.replace("_", " ")}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-xs text-muted-foreground">{o.city} · {new Date(o.created_at).toLocaleDateString()}</span>
@@ -904,8 +958,8 @@ function OrdersTab() {
                   <div className="border-t border-border/60 px-5 py-5 animate-fade-in">
                     {/* Order Timeline */}
                     <div className="flex flex-wrap gap-2">
-                      {["pending", "confirmed", "shipped", "delivered"].map((s, i) => {
-                        const statusOrder = ["pending", "confirmed", "shipped", "delivered"];
+                      {["pending", "payment_submitted", "confirmed", "shipped", "delivered"].map((s, i) => {
+                        const statusOrder = ["pending", "payment_submitted", "confirmed", "shipped", "delivered"];
                         const currentIdx = statusOrder.indexOf(o.status);
                         const done = i <= currentIdx && o.status !== "cancelled";
                         return (
@@ -913,13 +967,88 @@ function OrdersTab() {
                             done ? "bg-accent/10 text-accent" : "bg-secondary text-muted-foreground"
                           }`}>
                             {done ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                            {s}
+                            {s.replace("_", " ")}
                           </div>
                         );
                       })}
                     </div>
 
-                    {/* Details */}
+                    {/* Payment Details */}
+                    {payment && (
+                      <div className="mt-5 border border-border/60 bg-secondary/20 p-5">
+                        <h4 className="flex items-center gap-2 text-[10px] uppercase tracking-luxe text-muted-foreground">
+                          <CreditCard className="h-3.5 w-3.5" /> Payment Details
+                        </h4>
+                        <div className="mt-3 grid gap-4 md:grid-cols-2">
+                          <dl className="space-y-2 text-sm">
+                            <div className="flex gap-2"><dt className="text-muted-foreground">Method:</dt><dd className="font-medium">{payment.bank_name}</dd></div>
+                            <div className="flex gap-2"><dt className="text-muted-foreground">Transaction ID:</dt><dd className="font-mono text-xs">{payment.transaction_id}</dd></div>
+                            <div className="flex gap-2"><dt className="text-muted-foreground">Amount:</dt><dd className="font-serif">{formatPKR(payment.amount)}</dd></div>
+                            <div className="flex gap-2"><dt className="text-muted-foreground">50% of Total:</dt><dd className="font-serif text-accent">{formatPKR(halfAmount)}</dd></div>
+                            <div className="flex gap-2"><dt className="text-muted-foreground">Submitted:</dt><dd className="text-xs">{new Date(payment.created_at).toLocaleString()}</dd></div>
+                            {payment.admin_notes && (
+                              <div className="flex gap-2"><dt className="text-muted-foreground">Admin Notes:</dt><dd>{payment.admin_notes}</dd></div>
+                            )}
+                          </dl>
+                          {/* Receipt Preview */}
+                          <div>
+                            {payment.receipt_url && (
+                              <button
+                                type="button"
+                                onClick={() => setReceiptPreview(payment.receipt_url)}
+                                className="group relative block w-full overflow-hidden border border-border bg-secondary"
+                              >
+                                <img src={payment.receipt_url} alt="Receipt" className="h-40 w-full object-contain" />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
+                                  <span className="text-xs uppercase tracking-luxe text-white">View Full Size</span>
+                                </div>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Approve / Reject buttons */}
+                        {payment.status === "pending_review" && (
+                          <div className="mt-4 flex flex-wrap gap-3 border-t border-border/60 pt-4">
+                            <button
+                              onClick={() => handleApprove(payment.id, o.id)}
+                              disabled={approvePayment.isPending}
+                              className="flex items-center gap-2 bg-emerald-600 px-5 py-2.5 text-xs uppercase tracking-luxe text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                            >
+                              <ThumbsUp className="h-3.5 w-3.5" /> {approvePayment.isPending ? "Approving…" : "Approve Payment"}
+                            </button>
+                            <button
+                              onClick={() => setShowRejectModal({ paymentId: payment.id, orderId: o.id })}
+                              className="flex items-center gap-2 border border-red-300 px-5 py-2.5 text-xs uppercase tracking-luxe text-red-600 transition hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                            >
+                              <ThumbsDown className="h-3.5 w-3.5" /> Reject Payment
+                            </button>
+                          </div>
+                        )}
+                        {payment.status === "approved" && (
+                          <p className="mt-4 flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                            <ShieldCheck className="h-3.5 w-3.5" /> Payment verified
+                            {payment.reviewed_at && <span className="text-muted-foreground"> · {new Date(payment.reviewed_at).toLocaleDateString()}</span>}
+                          </p>
+                        )}
+                        {payment.status === "rejected" && (
+                          <p className="mt-4 flex items-center gap-2 text-xs text-red-600 dark:text-red-400">
+                            <XCircle className="h-3.5 w-3.5" /> Payment rejected
+                            {payment.admin_notes && <span className="text-muted-foreground"> — {payment.admin_notes}</span>}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* No payment yet */}
+                    {!payment && o.status === "pending" && (
+                      <div className="mt-5 flex items-center gap-3 border border-amber-300/50 bg-amber-50 px-5 py-3 text-sm dark:border-amber-700/50 dark:bg-amber-900/20">
+                        <Clock className="h-4 w-4 text-amber-600" />
+                        <span>Awaiting 50% advance payment ({formatPKR(halfAmount)}) from customer.</span>
+                      </div>
+                    )}
+
+                    {/* Customer & Items Details */}
                     <div className="mt-5 grid gap-6 md:grid-cols-2">
                       <div>
                         <h4 className="text-[10px] uppercase tracking-luxe text-muted-foreground">Customer Details</h4>
@@ -957,20 +1086,27 @@ function OrdersTab() {
                         onChange={(e) => handleStatus(o.id, e.target.value)}
                         className="border border-border bg-transparent px-3 py-1.5 text-xs uppercase tracking-luxe transition focus:border-accent focus:outline-none"
                       >
-                        {["pending", "confirmed", "shipped", "delivered", "cancelled"].map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                        {["pending", "payment_submitted", "confirmed", "shipped", "delivered", "cancelled"].map((s) => (
+                          <option key={s} value={s}>{s.replace("_", " ")}</option>
                         ))}
                       </select>
-                      <a
-                        href={`https://wa.me/${o.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                          `Hello ${o.customer_name}, your ÉCLAT order #${o.id.slice(0, 8)} has been ${o.status}. Thank you for shopping with us!`
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs uppercase tracking-luxe transition hover:border-[#25D366] hover:text-[#25D366]"
-                      >
-                        <MessageCircle className="h-3 w-3" /> WhatsApp
-                      </a>
+                      {/* Quick Actions */}
+                      {o.status === "confirmed" && (
+                        <button
+                          onClick={() => handleStatus(o.id, "shipped")}
+                          className="flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs uppercase tracking-luxe transition hover:border-purple-500 hover:text-purple-500"
+                        >
+                          <Truck className="h-3 w-3" /> Mark Shipped
+                        </button>
+                      )}
+                      {(o.status === "shipped" || o.status === "confirmed") && (
+                        <button
+                          onClick={() => handleStatus(o.id, "delivered")}
+                          className="flex items-center gap-1.5 border border-border px-3 py-1.5 text-xs uppercase tracking-luxe transition hover:border-emerald-500 hover:text-emerald-500"
+                        >
+                          <CheckCircle className="h-3 w-3" /> Mark Delivered
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -978,6 +1114,61 @@ function OrdersTab() {
             );
           })}
         </ul>
+      )}
+
+      {/* Receipt Lightbox */}
+      {receiptPreview && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fade-in"
+          onClick={() => setReceiptPreview(null)}
+        >
+          <div className="max-h-[90vh] max-w-3xl overflow-auto" onClick={(e) => e.stopPropagation()}>
+            <img src={receiptPreview} alt="Payment receipt" className="w-full rounded border border-border" />
+            <button
+              onClick={() => setReceiptPreview(null)}
+              className="mt-4 mx-auto block border border-white/30 px-6 py-2 text-xs uppercase tracking-luxe text-white hover:bg-white/10"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-md border border-border bg-background p-8 shadow-2xl">
+            <h3 className="font-serif text-xl">Reject Payment</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The customer will be notified and can resubmit payment proof.
+            </p>
+            <label className="mt-5 block">
+              <span className="text-[10px] uppercase tracking-luxe text-muted-foreground">Reason (optional)</span>
+              <textarea
+                value={rejectNotes}
+                onChange={(e) => setRejectNotes(e.target.value)}
+                rows={3}
+                placeholder="e.g. Screenshot is unclear, wrong amount…"
+                className="mt-1 w-full border border-border bg-transparent px-3 py-2.5 text-sm transition focus:border-accent focus:outline-none"
+              />
+            </label>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => { setShowRejectModal(null); setRejectNotes(""); }}
+                className="border border-border px-5 py-2.5 text-xs uppercase tracking-luxe transition hover:border-foreground"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReject}
+                disabled={rejectPayment.isPending}
+                className="bg-red-600 px-5 py-2.5 text-xs uppercase tracking-luxe text-white transition hover:bg-red-700 disabled:opacity-50"
+              >
+                {rejectPayment.isPending ? "Rejecting…" : "Reject Payment"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

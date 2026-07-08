@@ -22,9 +22,9 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
 
   const orderData = orders.data ?? [];
   const totalRevenue = orderData
-    .filter((o) => o.status === "delivered" || o.status === "confirmed" || o.status === "shipped")
-    .reduce((sum, o) => sum + Number(o.total), 0);
-  const pendingOrders = orderData.filter((o) => o.status === "pending").length;
+    .filter((o: any) => o.status === "delivered" || o.status === "confirmed" || o.status === "shipped")
+    .reduce((sum: number, o: any) => sum + Number(o.total), 0);
+  const pendingOrders = orderData.filter((o: any) => o.status === "pending").length;
 
   return {
     totalProducts: products.count ?? 0,
@@ -41,6 +41,19 @@ export function useDashboardStats() {
 }
 
 /* ─── Orders with revenue over time ─── */
+export type PaymentRow = {
+  id: string;
+  order_id: string;
+  transaction_id: string;
+  bank_name: string;
+  amount: number;
+  receipt_url: string;
+  status: string;
+  admin_notes: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+};
+
 export type OrderRow = {
   id: string;
   customer_name: string;
@@ -61,17 +74,18 @@ export type OrderRow = {
     color: string | null;
     size: string | null;
   }[];
+  order_payments: PaymentRow[];
 };
 
 export async function fetchAdminOrders(): Promise<OrderRow[]> {
   const { data, error } = await supabase
     .from("orders")
     .select(
-      "id,customer_name,phone,email,address,city,notes,total,status,whatsapp_sent,created_at,updated_at,order_items(name_snapshot,qty,price_snapshot,color,size)"
+      "id,customer_name,phone,email,address,city,notes,total,status,whatsapp_sent,created_at,updated_at,order_items(name_snapshot,qty,price_snapshot,color,size),order_payments(id,order_id,transaction_id,bank_name,amount,receipt_url,status,admin_notes,created_at,reviewed_at)"
     )
     .order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((o: any) => ({ ...o, total: Number(o.total) }));
+  return (data ?? []).map((o: any) => ({ ...o, total: Number(o.total), order_payments: (o.order_payments ?? []).map((p: any) => ({ ...p, amount: Number(p.amount) })) }));
 }
 
 export function useAdminOrders() {
@@ -87,6 +101,54 @@ export function useUpdateOrderStatus() {
         .update({ status: status as any })
         .eq("id", id);
       if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "orders"] });
+      qc.invalidateQueries({ queryKey: ["admin", "stats"] });
+    },
+  });
+}
+
+export function useApprovePayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ paymentId, orderId, notes }: { paymentId: string; orderId: string; notes?: string }) => {
+      // Update payment status
+      const { error: payErr } = await supabase
+        .from("order_payments")
+        .update({ status: "approved", admin_notes: notes ?? null, reviewed_at: new Date().toISOString() })
+        .eq("id", paymentId);
+      if (payErr) throw payErr;
+      // Update order status to confirmed
+      const { error: ordErr } = await supabase
+        .from("orders")
+        .update({ status: "confirmed" as any })
+        .eq("id", orderId);
+      if (ordErr) throw ordErr;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin", "orders"] });
+      qc.invalidateQueries({ queryKey: ["admin", "stats"] });
+    },
+  });
+}
+
+export function useRejectPayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ paymentId, orderId, notes }: { paymentId: string; orderId: string; notes?: string }) => {
+      // Update payment status to rejected
+      const { error: payErr } = await supabase
+        .from("order_payments")
+        .update({ status: "rejected", admin_notes: notes ?? null, reviewed_at: new Date().toISOString() })
+        .eq("id", paymentId);
+      if (payErr) throw payErr;
+      // Move order back to pending so customer can resubmit
+      const { error: ordErr } = await supabase
+        .from("orders")
+        .update({ status: "pending" as any })
+        .eq("id", orderId);
+      if (ordErr) throw ordErr;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin", "orders"] });

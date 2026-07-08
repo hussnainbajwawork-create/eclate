@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Check, MessageCircle } from "lucide-react";
+import { Check, CreditCard, ShieldCheck } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth-context";
-import { formatPKR, whatsappLink } from "@/lib/format";
+import { formatPKR, STORE_PAYMENT_INFO } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/checkout")({
@@ -29,15 +29,21 @@ function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState<{ orderId: string; waUrl: string } | null>(null);
+  const [done, setDone] = useState<{ orderId: string; total: number; halfAmount: number } | null>(null);
 
   const delivery = subtotal >= 10000 || subtotal === 0 ? 0 : 300;
   const total = subtotal + delivery;
+  const halfAmount = Math.ceil(total / 2);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (items.length === 0) {
       toast.error("Your bag is empty");
+      return;
+    }
+    if (!user) {
+      toast.error("Please sign in to place an order");
+      navigate({ to: "/auth" });
       return;
     }
     setSubmitting(true);
@@ -53,7 +59,7 @@ function Checkout() {
       const { data: order, error } = await supabase
         .from("orders")
         .insert({
-          user_id: user?.id ?? null,
+          user_id: user.id,
           customer_name,
           phone,
           email,
@@ -61,6 +67,7 @@ function Checkout() {
           city,
           notes,
           total,
+          status: "pending",
         })
         .select()
         .single();
@@ -78,17 +85,8 @@ function Checkout() {
       const { error: itemsError } = await supabase.from("order_items").insert(itemRows);
       if (itemsError) throw itemsError;
 
-      const waLines = items
-        .map((i) => `• ${i.name}${i.color ? ` · ${i.color}` : ""}${i.size ? ` · ${i.size}` : ""} × ${i.qty} — ${formatPKR(i.price * i.qty)}`)
-        .join("\n");
-      const waMsg = `Hello ÉCLAT, I'd like to confirm my order:\n\n${waLines}\n\nTotal: ${formatPKR(total)}\nName: ${customer_name}\nPhone: ${phone}\nAddress: ${address}, ${city}\nOrder ID: ${order.id.slice(0, 8)}`;
-      const waUrl = whatsappLink(waMsg);
-
-      await supabase.from("orders").update({ whatsapp_sent: true }).eq("id", order.id);
-
       clear();
-      setDone({ orderId: order.id, waUrl });
-      window.open(waUrl, "_blank");
+      setDone({ orderId: order.id, total, halfAmount });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message ?? "Could not place order");
@@ -97,6 +95,7 @@ function Checkout() {
     }
   };
 
+  /* ── Success screen: Order placed, pay 50% ── */
   if (done) {
     return (
       <SiteLayout>
@@ -104,21 +103,46 @@ function Checkout() {
           <div className="flex h-16 w-16 items-center justify-center rounded-full border border-accent text-accent">
             <Check className="h-7 w-7" />
           </div>
-          <h1 className="mt-8 font-serif text-4xl md:text-5xl">Merci.</h1>
+          <h1 className="mt-8 font-serif text-4xl md:text-5xl">Order Placed</h1>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
             Your order has been received. Order ID:{" "}
-            <span className="font-mono text-foreground">{done.orderId.slice(0, 8)}</span>. Continue your conversation on
-            WhatsApp to confirm details.
+            <span className="font-mono text-foreground">#{done.orderId.slice(0, 8)}</span>.
+            To confirm your order, please pay <strong className="text-foreground">{formatPKR(done.halfAmount)}</strong> (50% advance).
           </p>
-          <div className="mt-10 flex gap-3">
-            <a href={done.waUrl} target="_blank" rel="noreferrer" className="btn-gold inline-flex items-center gap-2 px-6 py-3 text-xs uppercase tracking-luxe">
-              <MessageCircle className="h-4 w-4" /> Open WhatsApp
-            </a>
+
+          {/* Bank details card */}
+          <div className="mt-10 w-full max-w-md border border-border/60 bg-card p-6 text-left">
+            <h3 className="flex items-center gap-2 text-xs uppercase tracking-luxe text-muted-foreground">
+              <ShieldCheck className="h-3.5 w-3.5" /> Payment Details
+            </h3>
+            <dl className="mt-4 space-y-2 text-sm">
+              <div className="flex justify-between"><dt className="text-muted-foreground">Bank</dt><dd className="font-medium">{STORE_PAYMENT_INFO.bankName}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">Account Title</dt><dd className="font-medium">{STORE_PAYMENT_INFO.accountTitle}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">Account No.</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.accountNumber}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">IBAN</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.iban}</dd></div>
+              <div className="mt-3 border-t border-border/60 pt-3">
+                <div className="flex justify-between"><dt className="text-muted-foreground">JazzCash</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.jazzcash}</dd></div>
+              </div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">EasyPaisa</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.easypaisa}</dd></div>
+            </dl>
+            <div className="mt-4 flex items-baseline justify-between border-t border-border/60 pt-4">
+              <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (50%)</span>
+              <span className="font-serif text-2xl text-accent">{formatPKR(done.halfAmount)}</span>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <button
-              onClick={() => navigate({ to: "/shop" })}
-              className="border border-border px-6 py-3 text-xs uppercase tracking-luxe link-underline"
+              onClick={() => navigate({ to: "/pay/$orderId", params: { orderId: done.orderId } })}
+              className="btn-gold inline-flex items-center gap-2 px-8 py-4 text-xs uppercase tracking-luxe"
             >
-              Continue Shopping
+              <CreditCard className="h-4 w-4" /> Submit Payment Proof
+            </button>
+            <button
+              onClick={() => navigate({ to: "/account" })}
+              className="border border-border px-6 py-4 text-xs uppercase tracking-luxe link-underline"
+            >
+              Go to My Account
             </button>
           </div>
         </section>
@@ -126,13 +150,14 @@ function Checkout() {
     );
   }
 
+  /* ── Checkout form ── */
   return (
     <SiteLayout>
       <section className="mx-auto max-w-3xl px-6 pt-16 pb-10 text-center">
         <span className="text-xs uppercase tracking-luxe text-muted-foreground">Checkout</span>
         <h1 className="mt-4 font-serif text-5xl md:text-6xl">Place Your Order</h1>
         <p className="mx-auto mt-5 max-w-lg text-sm text-muted-foreground">
-          Confirm your details. We'll continue on WhatsApp to arrange delivery.
+          Confirm your details and place your order. You'll pay 50% advance after placing the order.
         </p>
       </section>
 
@@ -142,6 +167,13 @@ function Checkout() {
             Your bag is empty. <Link to="/shop" className="link-underline">Shop the collection.</Link>
           </div>
         )}
+
+        {!user && (
+          <div className="mb-8 border border-amber-300/50 bg-amber-50 p-5 text-center text-sm dark:border-amber-700/50 dark:bg-amber-900/20">
+            <p>Please <Link to="/auth" className="link-underline font-medium">sign in</Link> to place an order. We need your account to track your orders.</p>
+          </div>
+        )}
+
         <form onSubmit={onSubmit} className="border border-border/60 bg-card p-8 md:p-14 animate-fade-up">
           <h2 className="font-serif text-2xl">Your Details</h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -172,16 +204,21 @@ function Checkout() {
               <dt className="text-xs uppercase tracking-luxe text-muted-foreground">Total</dt>
               <dd className="font-serif text-2xl">{formatPKR(total)}</dd>
             </div>
+            <div className="flex items-baseline justify-between">
+              <dt className="text-xs uppercase tracking-luxe text-accent">50% Advance Payment</dt>
+              <dd className="font-serif text-xl text-accent">{formatPKR(halfAmount)}</dd>
+            </div>
           </dl>
 
           <button
             type="submit"
-            disabled={submitting || items.length === 0}
+            disabled={submitting || items.length === 0 || !user}
             className="btn-gold mt-10 flex w-full items-center justify-center gap-2 py-5 text-xs uppercase tracking-luxe disabled:opacity-50"
           >
-            <MessageCircle className="h-4 w-4" /> {submitting ? "Placing…" : "Place Order via WhatsApp"}
+            <CreditCard className="h-4 w-4" /> {submitting ? "Placing…" : "Place Order"}
           </button>
           <p className="mt-4 text-center text-[11px] text-muted-foreground">
+            After placing the order, you'll be asked to pay 50% advance ({formatPKR(halfAmount)}).
             Complimentary delivery on orders above PKR 10,000.
           </p>
         </form>

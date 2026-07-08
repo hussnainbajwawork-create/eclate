@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LogOut, Package, User, MapPin, Phone, Mail, Pencil, Check, Clock, Truck, CheckCircle } from "lucide-react";
+import { LogOut, Package, User, MapPin, Phone, Mail, Pencil, Check, Clock, Truck, CheckCircle, CreditCard, ShieldCheck, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
@@ -29,7 +29,23 @@ type Order = {
   order_items: { name_snapshot: string; qty: number; price_snapshot: number; color: string | null; size: string | null }[];
 };
 
-const STATUS_STEPS = ["pending", "confirmed", "shipped", "delivered"];
+const STATUS_STEPS = ["pending", "payment_submitted", "confirmed", "shipped", "delivered"];
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "pending",
+  payment_submitted: "payment",
+  confirmed: "confirmed",
+  shipped: "shipped",
+  delivered: "delivered",
+};
+
+const STATUS_ICONS: Record<string, any> = {
+  pending: Clock,
+  payment_submitted: CreditCard,
+  confirmed: ShieldCheck,
+  shipped: Truck,
+  delivered: CheckCircle,
+};
 
 function OrderTimeline({ status }: { status: string }) {
   const currentIdx = STATUS_STEPS.indexOf(status);
@@ -40,6 +56,7 @@ function OrderTimeline({ status }: { status: string }) {
       {STATUS_STEPS.map((s, i) => {
         const done = !isCancelled && i <= currentIdx;
         const isCurrent = !isCancelled && i === currentIdx;
+        const StepIcon = STATUS_ICONS[s] ?? Clock;
         return (
           <div key={s} className="flex items-center gap-1">
             <div
@@ -51,8 +68,8 @@ function OrderTimeline({ status }: { status: string }) {
                     : "bg-secondary text-muted-foreground"
               }`}
             >
-              {done ? <CheckCircle className="h-2.5 w-2.5" /> : <Clock className="h-2.5 w-2.5" />}
-              {s}
+              {done ? <CheckCircle className="h-2.5 w-2.5" /> : <StepIcon className="h-2.5 w-2.5" />}
+              {STATUS_LABELS[s] ?? s}
             </div>
             {i < STATUS_STEPS.length - 1 && (
               <div className={`h-px w-4 ${done && i < currentIdx ? "bg-accent" : "bg-border"}`} />
@@ -62,7 +79,7 @@ function OrderTimeline({ status }: { status: string }) {
       })}
       {isCancelled && (
         <div className="ml-1 bg-red-100 px-2 py-1 text-[9px] uppercase tracking-luxe text-red-600 dark:bg-red-900/20 dark:text-red-400">
-          Cancelled
+          <XCircle className="inline h-2.5 w-2.5 mr-1" />Cancelled
         </div>
       )}
     </div>
@@ -92,7 +109,7 @@ function Account() {
       .select("full_name, phone, address, city")
       .eq("id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data }: { data: any }) => {
         if (data) {
           setProfile(data);
           setProfileForm(data);
@@ -108,7 +125,7 @@ function Account() {
       .select("id,total,status,created_at,customer_name,city,order_items(name_snapshot,qty,price_snapshot,color,size)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .then(({ data }: { data: any }) => {
         setOrders((data ?? []) as any);
         setLoadingOrders(false);
       });
@@ -323,6 +340,26 @@ function Account() {
                       <div className="mt-4 flex items-baseline justify-between border-t border-border/60 pt-3">
                         <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
                         <span className="font-serif text-xl">{formatPKR(o.total)}</span>
+                      </div>
+
+                      {/* Payment Actions */}
+                      <div className="mt-4 flex flex-wrap gap-3 border-t border-border/60 pt-4">
+                        {o.status === "pending" && (
+                          <Link
+                            to="/pay/$orderId"
+                            params={{ orderId: o.id }}
+                            className="btn-gold inline-flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-luxe"
+                          >
+                            <CreditCard className="h-3.5 w-3.5" /> Pay 50% Advance
+                          </Link>
+                        )}
+                        <Link
+                          to="/track-order/$orderId"
+                          params={{ orderId: o.id }}
+                          className="inline-flex items-center gap-2 border border-border px-5 py-2.5 text-xs uppercase tracking-luxe transition hover:border-foreground"
+                        >
+                          <Package className="h-3.5 w-3.5" /> Track Order
+                        </Link>
                       </div>
                     </div>
                   )}

@@ -103,6 +103,53 @@ export type Database = {
           },
         ]
       }
+      order_payments: {
+        Row: {
+          id: string
+          order_id: string
+          transaction_id: string
+          bank_name: string
+          amount: number
+          receipt_url: string
+          status: string
+          admin_notes: string | null
+          created_at: string
+          reviewed_at: string | null
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          transaction_id: string
+          bank_name: string
+          amount: number
+          receipt_url: string
+          status?: string
+          admin_notes?: string | null
+          created_at?: string
+          reviewed_at?: string | null
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          transaction_id?: string
+          bank_name?: string
+          amount?: number
+          receipt_url?: string
+          status?: string
+          admin_notes?: string | null
+          created_at?: string
+          reviewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           address: string
@@ -345,6 +392,7 @@ export type Database = {
       app_role: "admin" | "customer"
       order_status:
         | "pending"
+        | "payment_submitted"
         | "confirmed"
         | "shipped"
         | "delivered"
@@ -480,6 +528,7 @@ export const Constants = {
       app_role: ["admin", "customer"],
       order_status: [
         "pending",
+        "payment_submitted",
         "confirmed",
         "shipped",
         "delivered",

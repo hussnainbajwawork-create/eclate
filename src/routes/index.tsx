@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { ProductCard } from "@/components/product-card";
 import { useProducts } from "@/lib/db";
-import { whatsappLink, INSTAGRAM_URL } from "@/lib/format";
+import { INSTAGRAM_URL } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -155,7 +155,7 @@ function Home() {
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
             <a
-              href={whatsappLink("Hello ÉCLAT, I'd like to place an order.")}
+              href="https://wa.me/923001234567?text=Hello%20%C3%89CLAT%2C%20I'd%20like%20to%20place%20an%20order."
               target="_blank"
               rel="noreferrer"
               className="btn-gold inline-flex items-center justify-center gap-2 px-8 py-4 text-xs uppercase tracking-luxe font-medium"

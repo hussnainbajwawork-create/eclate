@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event: any, sess: any) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
@@ -30,14 +30,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .eq("user_id", sess.user.id)
             .eq("role", "admin")
             .maybeSingle()
-            .then(({ data }) => setIsAdmin(!!data));
+            .then(({ data }: { data: any }) => setIsAdmin(!!data));
         }, 0);
       } else {
         setIsAdmin(false);
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    supabase.auth.getSession().then(({ data: { session: s } }: { data: { session: any } }) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .eq("user_id", s.user.id)
           .eq("role", "admin")
           .maybeSingle()
-          .then(({ data }) => setIsAdmin(!!data));
+          .then(({ data }: { data: any }) => setIsAdmin(!!data));
       }
       setLoading(false);
     });

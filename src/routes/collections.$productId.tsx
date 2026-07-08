@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { ProductCard } from "@/components/product-card";
 import { useProduct, useProducts } from "@/lib/db";
-import { formatPKR, whatsappLink } from "@/lib/format";
+import { formatPKR } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
 
@@ -290,7 +290,7 @@ function ProductPage() {
   };
 
   const shareWhatsApp = () => {
-    window.open(whatsappLink(`Check out this piece from ÉCLAT: ${product.name} — ${window.location.href}`), "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(`Check out this piece from ÉCLAT: ${product.name} — ${window.location.href}`)}`, "_blank");
     setShareOpen(false);
   };
 
@@ -461,7 +461,7 @@ function ProductPage() {
               <ShoppingBag className="h-4 w-4" /> {soldOut ? "Sold Out" : "Add to Bag"}
             </button>
             <a
-              href={whatsappLink(waMsg)}
+              href={`https://wa.me/923001234567?text=${encodeURIComponent(waMsg)}`}
               target="_blank"
               rel="noreferrer"
               className="flex flex-1 items-center justify-center gap-2 border border-border py-5 text-center text-xs uppercase tracking-luxe transition hover:border-foreground"
