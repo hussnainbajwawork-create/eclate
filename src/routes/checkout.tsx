@@ -31,7 +31,7 @@ function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState<{ orderId: string; total: number; halfAmount: number } | null>(null);
 
-  const delivery = subtotal >= 10000 || subtotal === 0 ? 0 : 300;
+  const delivery = subtotal === 0 ? 0 : 250;
   const total = subtotal + delivery;
   const halfAmount = Math.ceil(total / 2);
 
@@ -120,10 +120,6 @@ function Checkout() {
               <div className="flex justify-between"><dt className="text-muted-foreground">Account Title</dt><dd className="font-medium">{STORE_PAYMENT_INFO.accountTitle}</dd></div>
               <div className="flex justify-between"><dt className="text-muted-foreground">Account No.</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.accountNumber}</dd></div>
               <div className="flex justify-between"><dt className="text-muted-foreground">IBAN</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.iban}</dd></div>
-              <div className="mt-3 border-t border-border/60 pt-3">
-                <div className="flex justify-between"><dt className="text-muted-foreground">JazzCash</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.jazzcash}</dd></div>
-              </div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">EasyPaisa</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.easypaisa}</dd></div>
             </dl>
             <div className="mt-4 flex items-baseline justify-between border-t border-border/60 pt-4">
               <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (50%)</span>
@@ -219,7 +215,7 @@ function Checkout() {
           </button>
           <p className="mt-4 text-center text-[11px] text-muted-foreground">
             After placing the order, you'll be asked to pay 50% advance ({formatPKR(halfAmount)}).
-            Complimentary delivery on orders above PKR 10,000.
+            Delivery charges of PKR 250 apply.
           </p>
         </form>
       </section>

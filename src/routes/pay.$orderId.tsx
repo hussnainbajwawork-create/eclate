@@ -295,17 +295,6 @@ function PaymentPage() {
                 </dl>
               </div>
 
-              {/* Mobile Wallets */}
-              <div className="mt-5 border-t border-border/60 pt-4 space-y-3">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-luxe text-accent">
-                  <Smartphone className="h-3.5 w-3.5" /> Mobile Wallets
-                </div>
-                <dl className="space-y-1.5 text-sm">
-                  <div className="flex justify-between"><dt className="text-muted-foreground">JazzCash</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.jazzcash}</dd></div>
-                  <div className="flex justify-between"><dt className="text-muted-foreground">EasyPaisa</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.easypaisa}</dd></div>
-                </dl>
-              </div>
-
               <div className="mt-5 flex items-baseline justify-between border-t border-border/60 pt-4">
                 <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due</span>
                 <span className="font-serif text-2xl text-accent">{formatPKR(halfAmount)}</span>

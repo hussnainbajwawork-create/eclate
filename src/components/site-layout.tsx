@@ -238,7 +238,7 @@ function Footer() {
             <p className="mt-4 text-sm text-muted-foreground">
               Lahore · Karachi · Islamabad<br />
               hello@eclat.pk<br />
-              +92 300 1234567
+              +92 322 7505007
             </p>
           </div>
         </div>

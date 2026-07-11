@@ -36,7 +36,7 @@ function addToRecentlyViewed(slug: string) {
     items.unshift(slug);
     if (items.length > MAX_RECENT) items = items.slice(0, MAX_RECENT);
     localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(items));
-  } catch {}
+  } catch { }
 }
 
 function getRecentlyViewed(): string[] {
@@ -275,9 +275,8 @@ function ProductPage() {
     toast.success(`${product.name} added to bag`);
   };
 
-  const waMsg = `Hello ÉCLAT, I'd like to order: ${product.name}${color ? ` · ${color.name}` : ""}${
-    size ? ` · ${size}` : ""
-  } × ${qty}. Total ${formatPKR(product.price * qty)}.`;
+  const waMsg = `Hello ÉCLAT, I'd like to order: ${product.name}${color ? ` · ${color.name}` : ""}${size ? ` · ${size}` : ""
+    } × ${qty}. Total ${formatPKR(product.price * qty)}.`;
 
   const toggleZoom = () => {
     if (zoom > 1) { setZoom(1); setPan({ x: 0, y: 0 }); } else { setZoom(2); }
@@ -350,9 +349,8 @@ function ProductPage() {
                 <button
                   key={src + i}
                   onClick={() => setActive(i)}
-                  className={`relative aspect-square overflow-hidden bg-secondary transition ${
-                    active === i ? "ring-1 ring-accent ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100"
-                  }`}
+                  className={`relative aspect-square overflow-hidden bg-secondary transition ${active === i ? "ring-1 ring-accent ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100"
+                    }`}
                   aria-label={`View ${i + 1}`}
                 >
                   <img src={src} alt="" className="h-full w-full object-cover" />
@@ -395,9 +393,8 @@ function ProductPage() {
                       key={c.id}
                       onClick={() => setColor({ name: c.name, hex: c.hex })}
                       aria-label={c.name}
-                      className={`relative h-9 w-9 rounded-full border transition ${
-                        selected ? "border-accent" : "border-border hover:border-foreground/40"
-                      }`}
+                      className={`relative h-9 w-9 rounded-full border transition ${selected ? "border-accent" : "border-border hover:border-foreground/40"
+                        }`}
                     >
                       <span className="absolute inset-1 rounded-full" style={{ backgroundColor: c.hex }} />
                       {selected && (
@@ -430,9 +427,8 @@ function ProductPage() {
                   <button
                     key={s}
                     onClick={() => setSize(s)}
-                    className={`min-w-[3rem] border px-3 py-2 text-xs uppercase tracking-luxe transition ${
-                      size === s ? "border-accent bg-accent/5" : "border-border hover:border-foreground/40"
-                    }`}
+                    className={`min-w-[3rem] border px-3 py-2 text-xs uppercase tracking-luxe transition ${size === s ? "border-accent bg-accent/5" : "border-border hover:border-foreground/40"
+                      }`}
                   >
                     {s}
                   </button>
@@ -461,7 +457,7 @@ function ProductPage() {
               <ShoppingBag className="h-4 w-4" /> {soldOut ? "Sold Out" : "Add to Bag"}
             </button>
             <a
-              href={`https://wa.me/923001234567?text=${encodeURIComponent(waMsg)}`}
+              href={`https://wa.me/923227505007?text=${encodeURIComponent(waMsg)}`}
               target="_blank"
               rel="noreferrer"
               className="flex flex-1 items-center justify-center gap-2 border border-border py-5 text-center text-xs uppercase tracking-luxe transition hover:border-foreground"
@@ -471,9 +467,8 @@ function ProductPage() {
             <button
               onClick={() => wishlist.toggle(product.id)}
               aria-label="Save to wishlist"
-              className={`flex h-auto items-center justify-center border px-5 transition ${
-                wished ? "border-accent text-accent" : "border-border hover:border-foreground"
-              }`}
+              className={`flex h-auto items-center justify-center border px-5 transition ${wished ? "border-accent text-accent" : "border-border hover:border-foreground"
+                }`}
             >
               <Heart className={`h-4 w-4 ${wished ? "fill-current" : ""}`} />
             </button>
@@ -500,7 +495,7 @@ function ProductPage() {
 
           {/* Reassurance */}
           <ul className="mt-10 grid grid-cols-1 gap-4 border-t border-border/60 pt-8 text-xs text-muted-foreground sm:grid-cols-3">
-            <li className="flex items-center gap-2"><Truck className="h-4 w-4 text-accent" /> Free delivery PKR 10k+</li>
+            <li className="flex items-center gap-2"><Truck className="h-4 w-4 text-accent" /> Standard delivery PKR 250</li>
             <li className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-accent" /> Lifetime craftsmanship</li>
             <li className="flex items-center gap-2"><RotateCcw className="h-4 w-4 text-accent" /> 14-day exchange</li>
           </ul>
@@ -523,7 +518,7 @@ function ProductPage() {
               <Accordion title="Delivery & Returns">
                 <div className="space-y-3 text-sm text-muted-foreground">
                   <p>{product.delivery_info}</p>
-                  <p>Free delivery on orders above PKR 10,000. Standard delivery takes 3-5 business days across Pakistan.</p>
+                  <p>Standard delivery charges are PKR 250. Delivery takes 3-5 business days across Pakistan.</p>
                   <p>We accept exchanges within 14 days of delivery. Items must be unworn and in original packaging.</p>
                 </div>
               </Accordion>
@@ -654,9 +649,8 @@ function ProductPage() {
                 key={src + i}
                 onClick={() => { setActive(i); setZoom(1); setPan({ x: 0, y: 0 }); }}
                 aria-label={`View ${i + 1}`}
-                className={`h-16 w-16 overflow-hidden border transition ${
-                  active === i ? "border-accent" : "border-white/20 opacity-50 hover:opacity-100"
-                }`}
+                className={`h-16 w-16 overflow-hidden border transition ${active === i ? "border-accent" : "border-white/20 opacity-50 hover:opacity-100"
+                  }`}
               >
                 <img src={src} alt="" className="h-full w-full object-cover" />
               </button>

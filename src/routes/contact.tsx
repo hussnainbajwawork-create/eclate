@@ -70,7 +70,7 @@ function Contact() {
             </div>
             <div>
               <h3 className="font-serif text-lg">Phone</h3>
-              <p className="mt-1 text-sm text-muted-foreground">+92 300 1234567</p>
+              <p className="mt-1 text-sm text-muted-foreground">+92 322 7505007</p>
             </div>
           </div>
 
@@ -91,7 +91,7 @@ function Contact() {
             <h3 className="text-xs uppercase tracking-luxe text-muted-foreground">Follow Us</h3>
             <div className="mt-4 flex gap-4">
               <a
-                href="https://wa.me/923001234567?text=Hello%20%C3%89CLAT"
+                href="https://wa.me/923227505007?text=Hello%20%C3%89CLAT"
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-11 w-11 items-center justify-center border border-border text-muted-foreground transition hover:border-[#25D366] hover:text-[#25D366]"
@@ -122,7 +122,7 @@ function Contact() {
 
           {/* Quick WhatsApp CTA */}
           <a
-            href="https://wa.me/923001234567?text=Hello%20%C3%89CLAT%2C%20I'd%20like%20to%20get%20in%20touch."
+            href="https://wa.me/923227505007?text=Hello%20%C3%89CLAT%2C%20I'd%20like%20to%20get%20in%20touch."
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center gap-2 bg-[#25D366] px-6 py-4 text-xs uppercase tracking-luxe text-white transition hover:bg-[#20BD5C]"

@@ -137,7 +137,7 @@ function Home() {
           />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/25 to-black/60 backdrop-blur-[0.5px]" />
-        
+
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center text-white animate-fade-up">
           <span className="text-xs uppercase tracking-luxe text-white/80">Maison ÉCLAT · Pakistan</span>
           <h1 className="mt-6 font-serif text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
@@ -155,7 +155,7 @@ function Home() {
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
             <a
-              href="https://wa.me/923001234567?text=Hello%20%C3%89CLAT%2C%20I'd%20like%20to%20place%20an%20order."
+              href="https://wa.me/923227505007?text=Hello%20%C3%89CLAT%2C%20I'd%20like%20to%20place%20an%20order."
               target="_blank"
               rel="noreferrer"
               className="btn-gold inline-flex items-center justify-center gap-2 px-8 py-4 text-xs uppercase tracking-luxe font-medium"
@@ -220,8 +220,8 @@ function Home() {
         <div className="mt-16 grid gap-10 md:grid-cols-3">
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="aspect-[4/5] animate-pulse bg-secondary" />
-              ))
+              <div key={i} className="aspect-[4/5] animate-pulse bg-secondary" />
+            ))
             : featured.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
         </div>
         <div className="mt-12 text-center">

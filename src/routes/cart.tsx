@@ -72,12 +72,12 @@ function Cart() {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Delivery</dt>
-                  <dd>{subtotal >= 10000 ? "Complimentary" : formatPKR(300)}</dd>
+                  <dd>{subtotal === 0 ? "—" : formatPKR(250)}</dd>
                 </div>
               </dl>
               <div className="mt-6 flex items-baseline justify-between border-t border-border/60 pt-4">
                 <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
-                <span className="font-serif text-2xl">{formatPKR(subtotal + (subtotal >= 10000 || subtotal === 0 ? 0 : 300))}</span>
+                <span className="font-serif text-2xl">{formatPKR(subtotal + (subtotal === 0 ? 0 : 250))}</span>
               </div>
               <Link to="/checkout" className="btn-gold mt-8 block w-full py-4 text-center text-xs uppercase tracking-luxe">
                 Checkout

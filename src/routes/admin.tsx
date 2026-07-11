@@ -102,9 +102,8 @@ function Admin() {
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-xs uppercase tracking-luxe transition ${
-                tab === id ? "border-accent text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
+              className={`flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-xs uppercase tracking-luxe transition ${tab === id ? "border-accent text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
             >
               <Icon className="h-3.5 w-3.5" /> {label}
             </button>
@@ -923,9 +922,8 @@ function OrdersTab() {
             const halfAmount = Math.ceil(Number(o.total) / 2);
 
             return (
-              <li key={o.id} className={`border bg-card transition hover:shadow-sm ${
-                o.status === "payment_submitted" ? "border-orange-400/50" : "border-border/60"
-              }`}>
+              <li key={o.id} className={`border bg-card transition hover:shadow-sm ${o.status === "payment_submitted" ? "border-orange-400/50" : "border-border/60"
+                }`}>
                 <button
                   type="button"
                   onClick={() => setExpandedId(expanded ? null : o.id)}
@@ -936,13 +934,12 @@ function OrdersTab() {
                     <span className="font-serif text-base">{o.customer_name}</span>
                     <StatusBadge status={o.status} />
                     {payment && (
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] uppercase tracking-luxe ${
-                        payment.status === "approved"
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] uppercase tracking-luxe ${payment.status === "approved"
                           ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
                           : payment.status === "rejected"
                             ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                             : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                      }`}>
+                        }`}>
                         <Banknote className="h-2.5 w-2.5" /> {payment.status.replace("_", " ")}
                       </span>
                     )}
@@ -963,9 +960,8 @@ function OrdersTab() {
                         const currentIdx = statusOrder.indexOf(o.status);
                         const done = i <= currentIdx && o.status !== "cancelled";
                         return (
-                          <div key={s} className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-luxe ${
-                            done ? "bg-accent/10 text-accent" : "bg-secondary text-muted-foreground"
-                          }`}>
+                          <div key={s} className={`flex items-center gap-1.5 px-3 py-1.5 text-[10px] uppercase tracking-luxe ${done ? "bg-accent/10 text-accent" : "bg-secondary text-muted-foreground"
+                            }`}>
                             {done ? <CheckCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
                             {s.replace("_", " ")}
                           </div>
@@ -1413,7 +1409,7 @@ function AnalyticsTab() {
    ═══════════════════════════════════════════════════════════════ */
 function SettingsTab() {
   const [settings, setSettings] = useState({
-    whatsapp: "923001234567",
+    whatsapp: "923227505007",
     email: "hello@eclat.pk",
     instagram: "https://www.instagram.com/eclat14_?igsh=bTN0c2hjdWgwbTF4",
     facebook: "https://facebook.com/eclat.pk",

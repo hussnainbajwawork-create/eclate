@@ -7,16 +7,12 @@ export const FACEBOOK_URL = "https://facebook.com/eclat.pk";
 /** Payment methods customers can use */
 export const PAYMENT_METHODS = [
   "Bank Transfer",
-  "JazzCash",
-  "EasyPaisa",
 ] as const;
 
 /** Store bank details for customers to make payment */
 export const STORE_PAYMENT_INFO = {
-  bankName: "Bank Al Habib",
-  accountTitle: "ÉCLAT",
-  accountNumber: "0123-4567890123",
-  iban: "PK00BAHL0000012345678901",
-  jazzcash: "0300-1234567",
-  easypaisa: "0300-1234567",
+  bankName: "MEEZAN DIGITAL CENTRE",
+  accountTitle: "HASNAIN MASOOD",
+  accountNumber: "00300115411376",
+  iban: "PK33MEZN0000300115411376",
 } as const;
