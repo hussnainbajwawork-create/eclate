@@ -43,7 +43,7 @@ type PaymentData = {
 };
 
 const STATUS_FLOW = [
-  { key: "pending", label: "Order Placed", desc: "Your order has been received. Please pay 50% advance to confirm.", icon: Package },
+  { key: "pending", label: "Order Placed", desc: "Your order has been received. Please pay 20% advance to confirm.", icon: Package },
   { key: "payment_submitted", label: "Payment Submitted", desc: "Your payment proof is under review by our team.", icon: CreditCard },
   { key: "confirmed", label: "Payment Approved", desc: "Payment verified! Your order is now confirmed and being prepared.", icon: ShieldCheck },
   { key: "shipped", label: "Shipped", desc: "Your order is on its way to you.", icon: Truck },
@@ -60,7 +60,7 @@ function TrackOrderPage() {
   const [loading, setLoading] = useState(true);
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const halfAmount = order ? Math.ceil(Number(order.total) / 2) : 0;
+  const advanceAmount = order ? Math.ceil(Number(order.total) * 0.2) : 0;
 
   useEffect(() => {
     if (authLoading) return;
@@ -123,7 +123,7 @@ function TrackOrderPage() {
               onClick={() => navigate({ to: "/pay/$orderId", params: { orderId } })}
               className="btn-gold flex items-center gap-2 px-6 py-3 text-xs uppercase tracking-luxe"
             >
-              <CreditCard className="h-4 w-4" /> Pay 50% Advance
+              <CreditCard className="h-4 w-4" /> Pay 20% Advance
             </button>
           )}
         </div>
@@ -239,7 +239,7 @@ function TrackOrderPage() {
                     onClick={() => navigate({ to: "/pay/$orderId", params: { orderId } })}
                     className="btn-gold mt-4 inline-flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-luxe"
                   >
-                    <CreditCard className="h-3.5 w-3.5" /> Pay {formatPKR(halfAmount)} Now
+                    <CreditCard className="h-3.5 w-3.5" /> Pay {formatPKR(advanceAmount)} Now
                   </button>
                 )}
               </div>
@@ -267,8 +267,8 @@ function TrackOrderPage() {
               <span className="font-serif text-xl">{formatPKR(order.total)}</span>
             </div>
             <div className="flex items-baseline justify-between">
-              <span className="text-xs uppercase tracking-luxe text-accent">50% Advance</span>
-              <span className="font-serif text-lg text-accent">{formatPKR(halfAmount)}</span>
+              <span className="text-xs uppercase tracking-luxe text-accent">20% Advance</span>
+              <span className="font-serif text-lg text-accent">{formatPKR(advanceAmount)}</span>
             </div>
           </div>
         </div>

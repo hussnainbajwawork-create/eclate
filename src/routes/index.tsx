@@ -160,7 +160,7 @@ function Home() {
               rel="noreferrer"
               className="btn-gold inline-flex items-center justify-center gap-2 px-8 py-4 text-xs uppercase tracking-luxe font-medium"
             >
-              <MessageCircle className="h-4 w-4" /> Order on WhatsApp
+              <MessageCircle className="h-4 w-4" /> Customise Bags
             </a>
           </div>
         </div>

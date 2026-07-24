@@ -919,7 +919,7 @@ function OrdersTab() {
           {filtered.map((o) => {
             const expanded = expandedId === o.id;
             const payment = o.order_payments?.[0] ?? null;
-            const halfAmount = Math.ceil(Number(o.total) / 2);
+            const advanceAmount = Math.ceil(Number(o.total) * 0.2);
 
             return (
               <li key={o.id} className={`border bg-card transition hover:shadow-sm ${o.status === "payment_submitted" ? "border-orange-400/50" : "border-border/60"
@@ -980,7 +980,7 @@ function OrdersTab() {
                             <div className="flex gap-2"><dt className="text-muted-foreground">Method:</dt><dd className="font-medium">{payment.bank_name}</dd></div>
                             <div className="flex gap-2"><dt className="text-muted-foreground">Transaction ID:</dt><dd className="font-mono text-xs">{payment.transaction_id}</dd></div>
                             <div className="flex gap-2"><dt className="text-muted-foreground">Amount:</dt><dd className="font-serif">{formatPKR(payment.amount)}</dd></div>
-                            <div className="flex gap-2"><dt className="text-muted-foreground">50% of Total:</dt><dd className="font-serif text-accent">{formatPKR(halfAmount)}</dd></div>
+                            <div className="flex gap-2"><dt className="text-muted-foreground">20% of Total:</dt><dd className="font-serif text-accent">{formatPKR(advanceAmount)}</dd></div>
                             <div className="flex gap-2"><dt className="text-muted-foreground">Submitted:</dt><dd className="text-xs">{new Date(payment.created_at).toLocaleString()}</dd></div>
                             {payment.admin_notes && (
                               <div className="flex gap-2"><dt className="text-muted-foreground">Admin Notes:</dt><dd>{payment.admin_notes}</dd></div>
@@ -1040,7 +1040,7 @@ function OrdersTab() {
                     {!payment && o.status === "pending" && (
                       <div className="mt-5 flex items-center gap-3 border border-amber-300/50 bg-amber-50 px-5 py-3 text-sm dark:border-amber-700/50 dark:bg-amber-900/20">
                         <Clock className="h-4 w-4 text-amber-600" />
-                        <span>Awaiting 50% advance payment ({formatPKR(halfAmount)}) from customer.</span>
+                        <span>Awaiting 20% advance payment ({formatPKR(advanceAmount)}) from customer.</span>
                       </div>
                     )}
 

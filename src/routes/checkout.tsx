@@ -29,11 +29,11 @@ function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState<{ orderId: string; total: number; halfAmount: number } | null>(null);
+  const [done, setDone] = useState<{ orderId: string; total: number; advanceAmount: number } | null>(null);
 
   const delivery = subtotal === 0 ? 0 : 250;
   const total = subtotal + delivery;
-  const halfAmount = Math.ceil(total / 2);
+  const advanceAmount = Math.ceil(total * 0.2);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -86,7 +86,7 @@ function Checkout() {
       if (itemsError) throw itemsError;
 
       clear();
-      setDone({ orderId: order.id, total, halfAmount });
+      setDone({ orderId: order.id, total, advanceAmount });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message ?? "Could not place order");
@@ -95,7 +95,7 @@ function Checkout() {
     }
   };
 
-  /* ── Success screen: Order placed, pay 50% ── */
+  /* ── Success screen: Order placed, pay 20% ── */
   if (done) {
     return (
       <SiteLayout>
@@ -107,7 +107,7 @@ function Checkout() {
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
             Your order has been received. Order ID:{" "}
             <span className="font-mono text-foreground">#{done.orderId.slice(0, 8)}</span>.
-            To confirm your order, please pay <strong className="text-foreground">{formatPKR(done.halfAmount)}</strong> (50% advance).
+            To confirm your order, please pay <strong className="text-foreground">{formatPKR(done.advanceAmount)}</strong> (20% advance).
           </p>
 
           {/* Bank details card */}
@@ -122,8 +122,8 @@ function Checkout() {
               <div className="flex justify-between"><dt className="text-muted-foreground">IBAN</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.iban}</dd></div>
             </dl>
             <div className="mt-4 flex items-baseline justify-between border-t border-border/60 pt-4">
-              <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (50%)</span>
-              <span className="font-serif text-2xl text-accent">{formatPKR(done.halfAmount)}</span>
+              <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (20%)</span>
+              <span className="font-serif text-2xl text-accent">{formatPKR(done.advanceAmount)}</span>
             </div>
           </div>
 
@@ -153,7 +153,7 @@ function Checkout() {
         <span className="text-xs uppercase tracking-luxe text-muted-foreground">Checkout</span>
         <h1 className="mt-4 font-serif text-5xl md:text-6xl">Place Your Order</h1>
         <p className="mx-auto mt-5 max-w-lg text-sm text-muted-foreground">
-          Confirm your details and place your order. You'll pay 50% advance after placing the order.
+          Confirm your details and place your order. You'll pay 20% advance after placing the order.
         </p>
       </section>
 
@@ -201,8 +201,8 @@ function Checkout() {
               <dd className="font-serif text-2xl">{formatPKR(total)}</dd>
             </div>
             <div className="flex items-baseline justify-between">
-              <dt className="text-xs uppercase tracking-luxe text-accent">50% Advance Payment</dt>
-              <dd className="font-serif text-xl text-accent">{formatPKR(halfAmount)}</dd>
+              <dt className="text-xs uppercase tracking-luxe text-accent">20% Advance Payment</dt>
+              <dd className="font-serif text-xl text-accent">{formatPKR(advanceAmount)}</dd>
             </div>
           </dl>
 
@@ -214,7 +214,7 @@ function Checkout() {
             <CreditCard className="h-4 w-4" /> {submitting ? "Placing…" : "Place Order"}
           </button>
           <p className="mt-4 text-center text-[11px] text-muted-foreground">
-            After placing the order, you'll be asked to pay 50% advance ({formatPKR(halfAmount)}).
+            After placing the order, you'll be asked to pay 20% advance ({formatPKR(advanceAmount)}).
             Delivery charges of PKR 250 apply.
           </p>
         </form>
