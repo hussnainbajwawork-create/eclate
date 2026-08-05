@@ -43,7 +43,7 @@ type PaymentData = {
 };
 
 const STATUS_FLOW = [
-  { key: "pending", label: "Order Placed", desc: "Your order has been received. Please pay 20% advance to confirm.", icon: Package },
+  { key: "pending", label: "Order Placed", desc: "Your order has been received. Complete online payment if selected or await cash delivery.", icon: Package },
   { key: "payment_submitted", label: "Payment Submitted", desc: "Your payment proof is under review by our team.", icon: CreditCard },
   { key: "confirmed", label: "Payment Approved", desc: "Payment verified! Your order is now confirmed and being prepared.", icon: ShieldCheck },
   { key: "shipped", label: "Shipped", desc: "Your order is on its way to you.", icon: Truck },
@@ -60,7 +60,7 @@ function TrackOrderPage() {
   const [loading, setLoading] = useState(true);
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const advanceAmount = order ? Math.ceil(Number(order.total) * 0.2) : 0;
+  const orderTotal = order ? Number(order.total) : 0;
 
   useEffect(() => {
     if (authLoading) return;
@@ -118,12 +118,12 @@ function TrackOrderPage() {
               Placed on {new Date(order.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
             </p>
           </div>
-          {order.status === "pending" && (
+          {order.status === "pending" && !payment && (
             <button
               onClick={() => navigate({ to: "/pay/$orderId", params: { orderId } })}
               className="btn-gold flex items-center gap-2 px-6 py-3 text-xs uppercase tracking-luxe"
             >
-              <CreditCard className="h-4 w-4" /> Pay 20% Advance
+              <CreditCard className="h-4 w-4" /> Submit Payment Details
             </button>
           )}
         </div>
@@ -233,13 +233,13 @@ function TrackOrderPage() {
               </dl>
             ) : (
               <div className="mt-4 text-sm text-muted-foreground">
-                <p>No payment submitted yet.</p>
-                {order.status === "pending" && (
+                <p>{order.notes?.includes("Cash on Delivery") ? "Cash on Delivery order." : "No online payment submitted yet."}</p>
+                {order.status === "pending" && !order.notes?.includes("Cash on Delivery") && (
                   <button
                     onClick={() => navigate({ to: "/pay/$orderId", params: { orderId } })}
                     className="btn-gold mt-4 inline-flex items-center gap-2 px-5 py-2.5 text-xs uppercase tracking-luxe"
                   >
-                    <CreditCard className="h-3.5 w-3.5" /> Pay {formatPKR(advanceAmount)} Now
+                    <CreditCard className="h-3.5 w-3.5" /> Submit Payment Details
                   </button>
                 )}
               </div>

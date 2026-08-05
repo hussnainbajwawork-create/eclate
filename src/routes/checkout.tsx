@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Check, CreditCard, ShieldCheck } from "lucide-react";
+import { Check, CreditCard, ShieldCheck, Truck, Banknote } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
@@ -29,11 +29,11 @@ function Checkout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState<{ orderId: string; total: number; advanceAmount: number } | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
+  const [done, setDone] = useState<{ orderId: string; total: number; paymentMethod: "online" | "cod" } | null>(null);
 
   const delivery = subtotal === 0 ? 0 : 250;
   const total = subtotal + delivery;
-  const advanceAmount = Math.ceil(total * 0.2);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,7 +54,9 @@ function Checkout() {
       const email = String(fd.get("email") ?? "") || null;
       const address = String(fd.get("address") ?? "");
       const city = String(fd.get("city") ?? "");
-      const notes = String(fd.get("notes") ?? "") || null;
+      const userNotes = String(fd.get("notes") ?? "").trim();
+      const paymentLabel = paymentMethod === "online" ? "[Payment: Full Advance Online]" : "[Payment: Cash on Delivery]";
+      const combinedNotes = userNotes ? `${paymentLabel} ${userNotes}` : paymentLabel;
 
       const { data: order, error } = await supabase
         .from("orders")
@@ -65,7 +67,7 @@ function Checkout() {
           email,
           address,
           city,
-          notes,
+          notes: combinedNotes,
           total,
           status: "pending",
         })
@@ -86,7 +88,7 @@ function Checkout() {
       if (itemsError) throw itemsError;
 
       clear();
-      setDone({ orderId: order.id, total, advanceAmount });
+      setDone({ orderId: order.id, total, paymentMethod });
     } catch (err: any) {
       console.error(err);
       toast.error(err.message ?? "Could not place order");
@@ -95,8 +97,41 @@ function Checkout() {
     }
   };
 
-  /* ── Success screen: Order placed, pay 20% ── */
+  /* ── Success screen ── */
   if (done) {
+    if (done.paymentMethod === "cod") {
+      return (
+        <SiteLayout>
+          <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-32 text-center animate-fade-up">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500 text-emerald-500">
+              <Check className="h-7 w-7" />
+            </div>
+            <h1 className="mt-8 font-serif text-4xl md:text-5xl">Order Placed</h1>
+            <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
+              Thank you! Your order has been placed with <strong className="text-foreground">Cash on Delivery</strong>. Order ID:{" "}
+              <span className="font-mono text-foreground">#{done.orderId.slice(0, 8)}</span>.
+              You will pay <strong className="text-foreground">{formatPKR(done.total)}</strong> in cash upon parcel delivery.
+            </p>
+
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={() => navigate({ to: "/track-order/$orderId", params: { orderId: done.orderId } })}
+                className="btn-gold inline-flex items-center gap-2 px-8 py-4 text-xs uppercase tracking-luxe"
+              >
+                Track Order
+              </button>
+              <button
+                onClick={() => navigate({ to: "/account" })}
+                className="border border-border px-6 py-4 text-xs uppercase tracking-luxe link-underline"
+              >
+                Go to My Account
+              </button>
+            </div>
+          </section>
+        </SiteLayout>
+      );
+    }
+
     return (
       <SiteLayout>
         <section className="mx-auto flex max-w-2xl flex-col items-center px-6 py-32 text-center animate-fade-up">
@@ -107,7 +142,7 @@ function Checkout() {
           <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
             Your order has been received. Order ID:{" "}
             <span className="font-mono text-foreground">#{done.orderId.slice(0, 8)}</span>.
-            To confirm your order, please pay <strong className="text-foreground">{formatPKR(done.advanceAmount)}</strong> (20% advance).
+            To confirm your order, please pay <strong className="text-foreground">{formatPKR(done.total)}</strong> (Full payment in advance) and submit your payment details.
           </p>
 
           {/* Bank details card */}
@@ -122,8 +157,8 @@ function Checkout() {
               <div className="flex justify-between"><dt className="text-muted-foreground">IBAN</dt><dd className="font-mono text-xs">{STORE_PAYMENT_INFO.iban}</dd></div>
             </dl>
             <div className="mt-4 flex items-baseline justify-between border-t border-border/60 pt-4">
-              <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (20%)</span>
-              <span className="font-serif text-2xl text-accent">{formatPKR(done.advanceAmount)}</span>
+              <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due (Full)</span>
+              <span className="font-serif text-2xl text-accent">{formatPKR(done.total)}</span>
             </div>
           </div>
 
@@ -153,7 +188,7 @@ function Checkout() {
         <span className="text-xs uppercase tracking-luxe text-muted-foreground">Checkout</span>
         <h1 className="mt-4 font-serif text-5xl md:text-6xl">Place Your Order</h1>
         <p className="mx-auto mt-5 max-w-lg text-sm text-muted-foreground">
-          Confirm your details and place your order. You'll pay 20% advance after placing the order.
+          Confirm your details, select your payment preference, and place your order.
         </p>
       </section>
 
@@ -181,6 +216,68 @@ function Checkout() {
             <div className="md:col-span-2"><Field label="Delivery Notes"><input name="notes" placeholder="Optional" className={inputCls} /></Field></div>
           </div>
 
+          <h2 className="mt-12 font-serif text-2xl">Payment Option</h2>
+          <p className="mt-2 text-xs text-muted-foreground">Select how you would like to pay for your order.</p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <label
+              className={`flex cursor-pointer flex-col justify-between border p-5 transition ${
+                paymentMethod === "online"
+                  ? "border-accent bg-accent/5 ring-1 ring-accent"
+                  : "border-border/60 bg-background hover:border-border"
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="payment_method_option"
+                    value="online"
+                    checked={paymentMethod === "online"}
+                    onChange={() => setPaymentMethod("online")}
+                    className="text-accent focus:ring-accent"
+                  />
+                  <div>
+                    <span className="font-serif text-base font-medium">Full Advance Online</span>
+                    <span className="mt-0.5 block text-[11px] text-muted-foreground">Bank Transfer / EasyPaisa</span>
+                  </div>
+                </div>
+                <CreditCard className="h-5 w-5 text-accent shrink-0" />
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                Pay 100% in advance online and share your payment transfer details with us.
+              </p>
+            </label>
+
+            <label
+              className={`flex cursor-pointer flex-col justify-between border p-5 transition ${
+                paymentMethod === "cod"
+                  ? "border-accent bg-accent/5 ring-1 ring-accent"
+                  : "border-border/60 bg-background hover:border-border"
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="payment_method_option"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={() => setPaymentMethod("cod")}
+                    className="text-accent focus:ring-accent"
+                  />
+                  <div>
+                    <span className="font-serif text-base font-medium">Cash on Delivery</span>
+                    <span className="mt-0.5 block text-[11px] text-muted-foreground">Pay cash when delivered</span>
+                  </div>
+                </div>
+                <Truck className="h-5 w-5 text-accent shrink-0" />
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                Pay the total amount in cash to the rider upon receiving your parcel.
+              </p>
+            </label>
+          </div>
+
           <h2 className="mt-12 font-serif text-2xl">Order Summary</h2>
           <ul className="mt-6 divide-y divide-border/60 border-y border-border/60">
             {items.map((i) => (
@@ -200,9 +297,13 @@ function Checkout() {
               <dt className="text-xs uppercase tracking-luxe text-muted-foreground">Total</dt>
               <dd className="font-serif text-2xl">{formatPKR(total)}</dd>
             </div>
-            <div className="flex items-baseline justify-between">
-              <dt className="text-xs uppercase tracking-luxe text-accent">20% Advance Payment</dt>
-              <dd className="font-serif text-xl text-accent">{formatPKR(advanceAmount)}</dd>
+            <div className="flex items-baseline justify-between pt-1">
+              <dt className="text-xs uppercase tracking-luxe text-accent">
+                {paymentMethod === "online" ? "Amount Due Now (100% Online)" : "Amount Due Now (Cash on Delivery)"}
+              </dt>
+              <dd className="font-serif text-xl text-accent">
+                {paymentMethod === "online" ? formatPKR(total) : "PKR 0 (Pay on Delivery)"}
+              </dd>
             </div>
           </dl>
 
@@ -211,14 +312,17 @@ function Checkout() {
             disabled={submitting || items.length === 0 || !user}
             className="btn-gold mt-10 flex w-full items-center justify-center gap-2 py-5 text-xs uppercase tracking-luxe disabled:opacity-50"
           >
-            <CreditCard className="h-4 w-4" /> {submitting ? "Placing…" : "Place Order"}
+            {paymentMethod === "online" ? <CreditCard className="h-4 w-4" /> : <Banknote className="h-4 w-4" />}
+            {submitting ? "Placing…" : paymentMethod === "online" ? "Place Order & Proceed to Pay" : "Place Cash on Delivery Order"}
           </button>
           <p className="mt-4 text-center text-[11px] text-muted-foreground">
-            After placing the order, you'll be asked to pay 20% advance ({formatPKR(advanceAmount)}).
-            Delivery charges of PKR 250 apply.
+            {paymentMethod === "online"
+              ? `After placing the order, you will share your payment details for ${formatPKR(total)}.`
+              : `You will pay ${formatPKR(total)} in cash when your parcel is delivered.`}
           </p>
         </form>
       </section>
     </SiteLayout>
   );
 }
+

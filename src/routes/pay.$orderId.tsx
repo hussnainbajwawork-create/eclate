@@ -36,7 +36,7 @@ function PaymentPage() {
   const [receiptUrl, setReceiptUrl] = useState("");
   const [receiptPreview, setReceiptPreview] = useState("");
 
-  const advanceAmount = order ? Math.ceil(Number(order.total) * 0.2) : 0;
+  const payableAmount = order ? Number(order.total) : 0;
 
   // Load order
   useEffect(() => {
@@ -118,7 +118,7 @@ function PaymentPage() {
         order_id: order.id,
         transaction_id,
         bank_name,
-        amount: advanceAmount,
+        amount: payableAmount,
         receipt_url: receiptUrl,
       });
       if (payError) throw payError;
@@ -192,7 +192,7 @@ function PaymentPage() {
         <span className="text-xs uppercase tracking-luxe text-muted-foreground">Payment</span>
         <h1 className="mt-4 font-serif text-5xl md:text-6xl">Submit Payment</h1>
         <p className="mx-auto mt-5 max-w-lg text-sm text-muted-foreground">
-          Pay <strong className="text-foreground">{formatPKR(advanceAmount)}</strong> (20% advance) for order
+          Pay <strong className="text-foreground">{formatPKR(payableAmount)}</strong> (Full Amount) for order
           <span className="font-mono ml-1">#{orderId.slice(0, 8)}</span> and submit the proof below.
         </p>
       </section>
@@ -203,7 +203,7 @@ function PaymentPage() {
           <form onSubmit={onSubmit} className="border border-border/60 bg-card p-8 animate-fade-up">
             <h2 className="font-serif text-2xl">Payment Proof</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Transfer the advance amount using any of the methods below, then fill in the details.
+              Transfer the full amount using any of the methods below, then fill in the details.
             </p>
 
             <div className="mt-8 grid gap-5">
@@ -297,7 +297,7 @@ function PaymentPage() {
 
               <div className="mt-5 flex items-baseline justify-between border-t border-border/60 pt-4">
                 <span className="text-xs uppercase tracking-luxe text-muted-foreground">Amount Due</span>
-                <span className="font-serif text-2xl text-accent">{formatPKR(advanceAmount)}</span>
+                <span className="font-serif text-2xl text-accent">{formatPKR(payableAmount)}</span>
               </div>
             </div>
 
@@ -318,10 +318,6 @@ function PaymentPage() {
               <div className="mt-3 flex items-baseline justify-between border-t border-border/60 pt-3">
                 <span className="text-xs uppercase tracking-luxe text-muted-foreground">Order Total</span>
                 <span className="font-serif text-lg">{formatPKR(order.total)}</span>
-              </div>
-              <div className="mt-1 flex items-baseline justify-between">
-                <span className="text-xs uppercase tracking-luxe text-accent">20% Advance</span>
-                <span className="font-serif text-lg text-accent">{formatPKR(advanceAmount)}</span>
               </div>
             </div>
           </aside>
