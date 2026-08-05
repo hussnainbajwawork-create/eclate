@@ -40,24 +40,21 @@ function PaymentPage() {
 
   // Load order
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) { navigate({ to: "/auth" }); return; }
     supabase
       .from("orders")
       .select("id,total,status,customer_name,order_items(name_snapshot,qty,price_snapshot)")
       .eq("id", orderId)
-      .eq("user_id", user.id)
-      .single()
+      .maybeSingle()
       .then(({ data, error }: { data: any, error: any }) => {
         if (error || !data) {
-          toast.error("Order not found or access denied");
-          navigate({ to: "/account" });
+          toast.error("Order not found");
+          setLoadingOrder(false);
           return;
         }
         setOrder(data as any);
         setLoadingOrder(false);
       });
-  }, [orderId, user, authLoading, navigate]);
+  }, [orderId]);
 
   // Check if payment already exists
   useEffect(() => {
@@ -96,7 +93,7 @@ function PaymentPage() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!order || !user) return;
+    if (!order) return;
     if (!receiptUrl) {
       toast.error("Please upload a payment screenshot");
       return;

@@ -52,7 +52,7 @@ const STATUS_FLOW = [
 
 function TrackOrderPage() {
   const { orderId } = Route.useParams();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [order, setOrder] = useState<OrderData | null>(null);
@@ -60,19 +60,13 @@ function TrackOrderPage() {
   const [loading, setLoading] = useState(true);
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const orderTotal = order ? Number(order.total) : 0;
-
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) { navigate({ to: "/auth" }); return; }
-
     Promise.all([
       supabase
         .from("orders")
         .select("id,total,status,customer_name,phone,email,address,city,notes,created_at,updated_at,order_items(name_snapshot,qty,price_snapshot,color,size)")
         .eq("id", orderId)
-        .eq("user_id", user.id)
-        .single(),
+        .maybeSingle(),
       supabase
         .from("order_payments")
         .select("*")
@@ -80,25 +74,52 @@ function TrackOrderPage() {
         .maybeSingle(),
     ]).then(([orderRes, paymentRes]) => {
       if (orderRes.error || !orderRes.data) {
-        toast.error("Order not found");
-        navigate({ to: "/account" });
+        setOrder(null);
+        setLoading(false);
         return;
       }
       setOrder(orderRes.data as any);
       if (paymentRes.data) setPayment(paymentRes.data as any);
       setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setOrder(null);
+      setLoading(false);
     });
-  }, [orderId, user, authLoading, navigate]);
+  }, [orderId]);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <SiteLayout>
-        <div className="mx-auto max-w-5xl px-6 py-32 text-center text-sm text-muted-foreground">Loading…</div>
+        <div className="mx-auto max-w-5xl px-6 py-32 text-center text-sm text-muted-foreground">Loading order details…</div>
       </SiteLayout>
     );
   }
 
-  if (!order) return null;
+  if (!order) {
+    return (
+      <SiteLayout>
+        <section className="mx-auto flex max-w-xl flex-col items-center px-6 py-32 text-center animate-fade-up">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-red-500/30 bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400">
+            <XCircle className="h-7 w-7" />
+          </div>
+          <h1 className="mt-8 font-serif text-3xl md:text-4xl">Order Not Found</h1>
+          <p className="mt-4 text-sm text-muted-foreground">
+            We couldn't find an order matching <span className="font-mono text-foreground">#{orderId.slice(0, 8)}</span>.
+            Please verify the order link or Order ID and try again.
+          </p>
+          <div className="mt-8 flex gap-4">
+            <Link to="/" className="btn-gold px-6 py-3 text-xs uppercase tracking-luxe">
+              Return to Home
+            </Link>
+            <Link to="/contact" className="border border-border px-6 py-3 text-xs uppercase tracking-luxe hover:border-foreground">
+              Contact Support
+            </Link>
+          </div>
+        </section>
+      </SiteLayout>
+    );
+  }
 
   const isCancelled = order.status === "cancelled";
   const currentIdx = STATUS_FLOW.findIndex((s) => s.key === order.status);
@@ -266,10 +287,6 @@ function TrackOrderPage() {
               <span className="text-xs uppercase tracking-luxe text-muted-foreground">Total</span>
               <span className="font-serif text-xl">{formatPKR(order.total)}</span>
             </div>
-            <div className="flex items-baseline justify-between">
-              <span className="text-xs uppercase tracking-luxe text-accent">20% Advance</span>
-              <span className="font-serif text-lg text-accent">{formatPKR(advanceAmount)}</span>
-            </div>
           </div>
         </div>
 
@@ -305,3 +322,4 @@ function TrackOrderPage() {
     </SiteLayout>
   );
 }
+
